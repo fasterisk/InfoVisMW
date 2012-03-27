@@ -3,6 +3,26 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>ManiWordle</title>
+		<style type="text/css">
+			h1 
+			{
+				font-family: "Verdana";
+				font-size: 4em;
+				color: black;
+				text-align: center;
+			}
+			h2
+			{
+				font-family: "Verdana";
+				font-size: 2em;
+				color: black;
+				text-align: center;
+			}
+			body 
+			{
+				color:blue;
+			}
+		</style>
 		<script src="modernizr-2.5.3.js"></script>
 		<script type="text/javascript">
 			window.addEventListener('load', eventWindowLoaded, false);
@@ -34,7 +54,7 @@
 				function drawScreen()
 				{
 					context.fillStyle = '#aaaaaa';
-					context.fillRect(0, 0, 200, 200);
+					context.fillRect(0, 0, 800, 600);
 					context.fillStyle = '#000000';
 					context.font = '20px _sans';
 					context.textBaseline = 'top';
@@ -44,8 +64,16 @@
 		</script>
 	</head>
 	<body>
-		<div style="position: absolute; top: 50px; left: 50px;">
-			<canvas id="canvas" width="500" height="500">
+		<header>
+			<h1>
+				ManiWordle
+			</h1>
+			<h2>
+				Providing Flexible Control over Wordle
+			</h2>
+		</header>
+		<div style="position: absolute; top: 250px; left: 50px;">
+			<canvas id="canvas" width="800" height="600">
 				One does not simply use HTML5 Canvas with this browser
 			</canvas>
 		</div>
