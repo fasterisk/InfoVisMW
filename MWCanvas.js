@@ -12,7 +12,7 @@ function canvasApp()
 		return;
 	}
 
-	var message = "text";
+	var text = "text";
 	var fillOrStroke = "fill";
 	var fontSize = "50";
 	var fontFace = "serif";
@@ -27,6 +27,9 @@ function canvasApp()
 
 	var formElement = document.getElementById("textBox");
 	formElement.addEventListener('keyup', textBoxChanged, false);
+
+	formElement = document.getElementById("textSubmitButton");
+	formElement.addEventListener('click', submitButtonClicked, false);
 
 	formElement = document.getElementById("fillOrStroke");
 	formElement.addEventListener('change', fillOrStrokeChanged, false);
@@ -77,17 +80,17 @@ function canvasApp()
 		{
 		case "fill":
 			context.fillStyle = textFillColor;
-			context.fillText(message, xPosition, yPosition);
+			context.fillText(text, xPosition, yPosition);
 			break;
 		case "stroke":
 			context.strokeStyle = textFillColor;
-			context.strokeText(message, xPosition, yPosition);
+			context.strokeText(text, xPosition, yPosition);
 			break;
 		case "both":
 			context.fillStyle = textFillColor;
-			context.fillText(message, xPosition, yPosition);
+			context.fillText(text, xPosition, yPosition);
 			context.strokeStyle = "#000000";
-			context.strokeText(message, xPosition, yPosition);
+			context.strokeText(text, xPosition, yPosition);
 			break;
 		}
 	}
@@ -95,7 +98,13 @@ function canvasApp()
 	function textBoxChanged(e)
 	{
 		var target = e.target;
-		message = target.value;
+		text = target.value;
+		drawScreen();
+	}
+
+	function submitButtonClicked(e)
+	{
+		ReadText(text);
 		drawScreen();
 	}
 
