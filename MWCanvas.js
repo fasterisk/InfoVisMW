@@ -41,6 +41,9 @@ function canvasApp()
 	formElement.addEventListener('change', textFontChanged, false);
 
 	formElement = document.getElementById("textBaseline");
+	formElement.addEventListener('change', textBaselineChanged, false);
+
+	formElement = document.getElementById("textAlign");
 	formElement.addEventListener('change', textAlignChanged, false);
 
 	formElement = document.getElementById("fontWeight");
