@@ -1,51 +1,19 @@
-function MWCanvas()
+function MWCanvas(canvas)
 {
-	var fillOrStroke = "fill";
-	var fontSize = "50";
-	var fontFace = "serif";
-	var textFillColor = "#ff0000";
-	var textBaseline = "middle";
-	var textAlign = "center";
-	var fontWeight = "normal";
-	var fontStyle = "normal";
+	this.canvas = canvas;
+	
+	this.text = "text";
+	this.fillOrStroke = "fill";
+	this.fontSize = "50";
+	this.font = "serif";
+	this.textFillColor = "#ff0000";
+	this.fontWeight = "normal";
+	this.fontStyle = "normal";
 
-	var canvas = document.getElementById("canvas");
-	var context = canvas.getContext("2d");
-
-	var formElement = document.getElementById("textBox");
-	formElement.addEventListener('keyup', textBoxChanged, false);
-
-	formElement = document.getElementById("textSubmitButton");
-	formElement.addEventListener('click', submitButtonClicked, false);
-
-	formElement = document.getElementById("fillOrStroke");
-	formElement.addEventListener('change', fillOrStrokeChanged, false);
-
-	formElement = document.getElementById("textSize");
-	formElement.addEventListener('change', textSizeChanged, false);
-
-	formElement = document.getElementById("textFillColor");
-	formElement.addEventListener('change', textFillColorChanged, false);
-
-	formElement = document.getElementById("textFont");
-	formElement.addEventListener('change', textFontChanged, false);
-
-	formElement = document.getElementById("textBaseline");
-	formElement.addEventListener('change', textBaselineChanged, false);
-
-	formElement = document.getElementById("textAlign");
-	formElement.addEventListener('change', textAlignChanged, false);
-
-	formElement = document.getElementById("fontWeight");
-	formElement.addEventListener('change', fontWeightChanged, false);
-
-	formElement = document.getElementById("fontStyle");
-	formElement.addEventListener('change', fontStyleChanged, false);
-
-	drawScreen();
-
-	function drawScreen()
+	this.Draw = function()
 	{
+		var context = canvas.getContext("2d");
+		
 		// Background
 		context.fillStyle = '#ffffaa';
 		context.fillRect(0, 0, canvas.width, canvas.height);
@@ -55,99 +23,65 @@ function MWCanvas()
 		context.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
 
 		// Text
-		context.textBaseline = textBaseline;
-		context.textAlign = textAlign;
-		context.font = fontWeight + " " + fontStyle + " " + fontSize + "px "
-				+ fontFace;
+		context.textBaseline = "middle";
+		context.textAlign = "center";
+		context.font = this.fontWeight + " " + this.fontStyle + " " + this.fontSize + "px "
+				+ this.font;
 
 		var xPosition = (canvas.width / 2);
 		var yPosition = (canvas.height / 2);
 
-		switch (fillOrStroke)
+		switch (this.fillOrStroke)
 		{
 		case "fill":
-			context.fillStyle = textFillColor;
-			context.fillText(text, xPosition, yPosition);
+			context.fillStyle = this.textFillColor;
+			context.fillText(this.text, xPosition, yPosition);
 			break;
 		case "stroke":
-			context.strokeStyle = textFillColor;
-			context.strokeText(text, xPosition, yPosition);
+			context.strokeStyle = this.textFillColor;
+			context.strokeText(this.text, xPosition, yPosition);
 			break;
 		case "both":
-			context.fillStyle = textFillColor;
-			context.fillText(text, xPosition, yPosition);
+			context.fillStyle = this.textFillColor;
+			context.fillText(this.text, xPosition, yPosition);
 			context.strokeStyle = "#000000";
-			context.strokeText(text, xPosition, yPosition);
+			context.strokeText(this.text, xPosition, yPosition);
 			break;
 		}
-	}
-
-	function textBoxChanged(e)
+	};
+	
+	this.SetText = function(text)
 	{
-		var target = e.target;
-		text = target.value;
-		drawScreen();
-	}
-
-	function submitButtonClicked(e)
+		this.text = text;
+	};
+	
+	this.SetFillOrStroke = function(fillOrStroke)
 	{
-		ReadText(text);
-		drawScreen();
-	}
-
-	function fillOrStrokeChanged(e)
+		this.fillOrStroke = fillOrStroke;
+	};
+	
+	this.SetFontSize = function(fontsize)
 	{
-		var target = e.target;
-		fillOrStroke = target.value;
-		drawScreen();
-	}
-
-	function textSizeChanged(e)
+		this.fontSize = fontsize;
+	};
+	
+	this.SetFillColor = function(fillcolor)
 	{
-		var target = e.target;
-		fontSize = target.value;
-		drawScreen();
-	}
-
-	function textFillColorChanged(e)
+		this.textFillColor = fillcolor;
+	};
+	
+	this.SetFont = function(font)
 	{
-		var target = e.target;
-		textFillColor = "#" + target.value;
-		drawScreen();
-	}
-
-	function textFontChanged(e)
+		this.font = font;
+	};
+	
+	this.SetFontWeight = function(fontweight)
 	{
-		var target = e.target;
-		fontFace = target.value;
-		drawScreen();
-	}
-
-	function textBaselineChanged(e)
+		this.fontWeight = fontweight;
+	};
+	
+	this.SetFontStyle = function(fontstyle)
 	{
-		var target = e.target;
-		textBaseline = target.value;
-		drawScreen();
-	}
-
-	function textAlignChanged(e)
-	{
-		var target = e.target;
-		textAlign = target.value;
-		drawScreen();
-	}
-
-	function fontWeightChanged(e)
-	{
-		var target = e.target;
-		fontWeight = target.value;
-		drawScreen();
-	}
-
-	function fontStyleChanged(e)
-	{
-		var target = e.target;
-		fontStyle = target.value;
-		drawScreen();
-	}
+		this.fontStyle = fontstyle;
+	};
 }
