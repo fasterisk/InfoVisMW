@@ -17,3 +17,8 @@ Debugger.log = function(message)
 		return;
 	}
 };
+
+var WordSort = function(word1, word2)
+{
+	return word2.iCount - word1.iCount;
+};

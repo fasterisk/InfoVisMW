@@ -7,15 +7,14 @@ function MWTextHandler()
 	this.ReadText = function(text)
 	{
 		//remove . , " etc. from text
-		text = text.replace(/,/g, "");
+		text = text.replace(/\,/g, "");
 		text = text.replace(/\./g, "");
-		text = text.replace(/"/g, "");
-		text = text.replace(/;/g, "");
-		text = text.replace(/:/g, "");
-		text = text.replace(/'/g, "");
+		text = text.replace(/\"/g, "");
+		text = text.replace(/\;/g, "");
+		text = text.replace(/\:/g, "");
+		text = text.replace(/\'/g, "");
 		
 		
-		aWordList = new Array();
 		Debugger.log("TEXT CHANGED");
 		var currentPos = 0;
 		var newWordStr = "";
@@ -37,19 +36,19 @@ function MWTextHandler()
 			if (newWordStr.length > 2 && !wordInKnownList)
 			{
 				// Debugger.log(newWordStr);
-				for ( var i = 0; i < aWordList.length; i++)
+				for ( var i = 0; i < this.aWordList.length; i++)
 				{
-					if (aWordList[i].sWord == newWordStr)
+					if (this.aWordList[i].sWord == newWordStr)
 					{
-						Debugger.log("Increasing count of " + aWordList[i].sWord);
-						aWordList[i].IncreaseCount();
+						Debugger.log("Increasing count of " + this.aWordList[i].sWord);
+						this.aWordList[i].IncreaseCount();
 						wordInWordlist = true;
 					}
 				}
 				if (!wordInWordlist)
 				{
 					Debugger.log("Adding Word: " + newWordStr + " to Wordlist.");
-					aWordList.push(new MWWord(newWordStr));
+					this.aWordList.push(new MWWord(newWordStr));
 				}
 			}
 
@@ -68,31 +67,34 @@ function MWTextHandler()
 		{
 			wordInWordlist = false;
 			// Debugger.log(newWordStr);
-			for ( var i = 0; i < aWordList.length; i++)
+			for ( var i = 0; i < this.aWordList.length; i++)
 			{
-				if (aWordList[i].sWord == newWordStr)
+				if (this.aWordList[i].sWord == newWordStr)
 				{
-					Debugger.log("Increasing count of " + aWordList[i].sWord);
-					aWordList[i].IncreaseCount();
+					Debugger.log("Increasing count of " + this.aWordList[i].sWord);
+					this.aWordList[i].IncreaseCount();
 					wordInWordlist = true;
 				}
 			}
 			if (!wordInWordlist)
 			{
 				Debugger.log("Adding Word: " + newWordStr + " to Wordlist.");
-				aWordList.push(new MWWord(newWordStr));
+				this.aWordList.push(new MWWord(newWordStr));
 			}
 		}
+		
+		//Sort the wordlist according to the count of the words
+		this.aWordList.sort(WordSort);
 
 		// Debugging
-		for ( var i = 0; i < aWordList.length; i++)
+		for ( var i = 0; i < this.aWordList.length; i++)
 		{
-			Debugger.log(aWordList[i].sWord + " " + aWordList[i].iCount);
+			Debugger.log(this.aWordList[i].sWord + " " + this.aWordList[i].iCount);
 		}
 	};
 	
 	this.GetWordList = function()
 	{
-		return aWordList;
-	}
+		return this.aWordList;
+	};
 };
