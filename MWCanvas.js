@@ -1,18 +1,5 @@
-window.addEventListener('load', eventWindowLoaded, false);
-
-function eventWindowLoaded()
+function MWCanvas()
 {
-	canvasApp();
-}
-
-function canvasApp()
-{
-	if (!canvasSupport())
-	{
-		return;
-	}
-
-	var text = "text";
 	var fillOrStroke = "fill";
 	var fontSize = "50";
 	var fontFace = "serif";

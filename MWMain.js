@@ -1,83 +1,168 @@
-var knownWords = new Array();
-knownWords.push("the");
-knownWords.push("der");
-knownWords.push("ein");
-knownWords.push("eine");
-// todo: erweitern
+window.addEventListener('load', eventWindowLoaded, false);
 
-function ReadText(text)
+function eventWindowLoaded()
 {
-	var wordlist = new Array();
-	var countlist = new Array();
-	Debugger.log("TEXT CHANGED");
-	var currentPos = 0;
-	var newWordStr = "";
-	var wordInWordlist = false;
-	var nextPos = text.indexOf(" ", currentPos);
-	var enter = text.indexOf("/n", currentPos);
-	if (enter != -1 && enter < currentPos)
+	window.TextHandler = new MWTextHandler();
+	canvasApp();
+}
+
+function canvasApp()
+{
+	if (!canvasSupport())
 	{
-		nextPos = enter;
+		return;
 	}
 
-	while (nextPos != -1)
-	{
-		newWordStr = text.substring(currentPos, nextPos);
-		wordInWordlist = false;
-		if (newWordStr.length > 2)
-		{
-			// Debugger.log(newWordStr);
-			for ( var i = 0; i < wordlist.length; i++)
-			{
-				if (wordlist[i] == newWordStr)
-				{
-					Debugger.log("Increasing count of " + wordlist[i]);
-					countlist[i]++;
-					wordInWordlist = true;
-				}
-			}
-			if (!wordInWordlist)
-			{
-				Debugger.log("Adding Word: " + newWordStr + " to Wordlist.");
-				wordlist.push(newWordStr);
-				countlist.push(1);
-			}
-		}
+	var text = "text";
+	var fillOrStroke = "fill";
+	var fontSize = "50";
+	var fontFace = "serif";
+	var textFillColor = "#ff0000";
+	var textBaseline = "middle";
+	var textAlign = "center";
+	var fontWeight = "normal";
+	var fontStyle = "normal";
 
-		currentPos = nextPos + 1;
-		nextPos = text.indexOf(" ", currentPos);
-		var enter = text.indexOf("/n", currentPos);
-		if (enter != -1 && enter < currentPos)
+	var canvas = document.getElementById("canvas");
+	var context = canvas.getContext("2d");
+
+	var formElement = document.getElementById("textBox");
+	formElement.addEventListener('keyup', textBoxChanged, false);
+
+	formElement = document.getElementById("textSubmitButton");
+	formElement.addEventListener('click', submitButtonClicked, false);
+
+	formElement = document.getElementById("fillOrStroke");
+	formElement.addEventListener('change', fillOrStrokeChanged, false);
+
+	formElement = document.getElementById("textSize");
+	formElement.addEventListener('change', textSizeChanged, false);
+
+	formElement = document.getElementById("textFillColor");
+	formElement.addEventListener('change', textFillColorChanged, false);
+
+	formElement = document.getElementById("textFont");
+	formElement.addEventListener('change', textFontChanged, false);
+
+	formElement = document.getElementById("textBaseline");
+	formElement.addEventListener('change', textBaselineChanged, false);
+
+	formElement = document.getElementById("textAlign");
+	formElement.addEventListener('change', textAlignChanged, false);
+
+	formElement = document.getElementById("fontWeight");
+	formElement.addEventListener('change', fontWeightChanged, false);
+
+	formElement = document.getElementById("fontStyle");
+	formElement.addEventListener('change', fontStyleChanged, false);
+	
+	drawScreen();
+
+	function drawScreen()
+	{
+		// Background
+		context.fillStyle = '#ffffaa';
+		context.fillRect(0, 0, canvas.width, canvas.height);
+
+		// Box
+		context.fillStyle = '#000000';
+		context.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+
+		// Text
+		context.textBaseline = textBaseline;
+		context.textAlign = textAlign;
+		context.font = fontWeight + " " + fontStyle + " " + fontSize + "px "
+				+ fontFace;
+
+		var xPosition = (canvas.width / 2);
+		var yPosition = (canvas.height / 2);
+
+		switch (fillOrStroke)
 		{
-			nextPos = enter;
+		case "fill":
+			context.fillStyle = textFillColor;
+			context.fillText(text, xPosition, yPosition);
+			break;
+		case "stroke":
+			context.strokeStyle = textFillColor;
+			context.strokeText(text, xPosition, yPosition);
+			break;
+		case "both":
+			context.fillStyle = textFillColor;
+			context.fillText(text, xPosition, yPosition);
+			context.strokeStyle = "#000000";
+			context.strokeText(text, xPosition, yPosition);
+			break;
 		}
 	}
-	newWordStr = text.substring(currentPos, text.length);
 
-	if (newWordStr.length > 2)
+	function textBoxChanged(e)
 	{
-		wordInWordlist = false;
-		// Debugger.log(newWordStr);
-		for ( var i = 0; i < wordlist.length; i++)
-		{
-			if (wordlist[i] == newWordStr)
-			{
-				Debugger.log("Increasing count of " + wordlist[i]);
-				countlist[i]++;
-				wordInWordlist = true;
-			}
-		}
-		if (!wordInWordlist)
-		{
-			Debugger.log("Adding Word: " + newWordStr + " to Wordlist.");
-			wordlist.push(newWordStr);
-			countlist.push(1);
-		}
+		var target = e.target;
+		text = target.value;
+		drawScreen();
 	}
 
-	// Debugging
-	for ( var i = 0; i < wordlist.length; i++)
+	function submitButtonClicked(e)
 	{
-		Debugger.log(wordlist[i] + " " + countlist[i]);
+		window.TextHandler.ReadText(text);
+		drawScreen();
+	}
+
+	function fillOrStrokeChanged(e)
+	{
+		var target = e.target;
+		fillOrStroke = target.value;
+		drawScreen();
+	}
+
+	function textSizeChanged(e)
+	{
+		var target = e.target;
+		fontSize = target.value;
+		drawScreen();
+	}
+
+	function textFillColorChanged(e)
+	{
+		var target = e.target;
+		textFillColor = "#" + target.value;
+		drawScreen();
+	}
+
+	function textFontChanged(e)
+	{
+		var target = e.target;
+		fontFace = target.value;
+		drawScreen();
+	}
+
+	function textBaselineChanged(e)
+	{
+		var target = e.target;
+		textBaseline = target.value;
+		drawScreen();
+	}
+
+	function textAlignChanged(e)
+	{
+		var target = e.target;
+		textAlign = target.value;
+		drawScreen();
+	}
+
+	function fontWeightChanged(e)
+	{
+		var target = e.target;
+		fontWeight = target.value;
+		drawScreen();
+	}
+
+	function fontStyleChanged(e)
+	{
+		var target = e.target;
+		fontStyle = target.value;
+		drawScreen();
 	}
 }
+
