@@ -45,6 +45,7 @@ function MWWord(word)
 						this.iCount*10+ "px " +
 						this.sFont;
 		context.fillStyle = this.sFillColor;
+		context.strokeStyle = '#000000';
 		
 		var bDown = false;
 		var bUp = false;
@@ -60,7 +61,19 @@ function MWWord(word)
 		var bCanBeDrawn = false;
 		while(!bCanBeDrawn)
 		{
-			context.fillText(this.sWord, xPos, yPos);
+			switch(this.sFillOrStroke)
+			{
+			case "fill":
+				context.fillText(this.sWord, xPos, yPos);
+				break;
+			case "fill+stroke":
+				context.fillText(this.sWord, xPos, yPos);
+				context.strokeText(this.sWord, xPos, yPos);
+				break;
+			default:
+				context.fillText(this.sWord, xPos, yPos);
+				break;
+			}
 			
 			
 			var imageData = context.getImageData(xPos-textWidth/2, yPos-textWidth/2, textWidth, textWidth);
@@ -68,7 +81,7 @@ function MWWord(word)
 			
 			var bCollides = false;
 			
-			Debugger.log(pixels.length);
+			Debugger.log("Drawing Word: "+ this.sWord);
 			for(var i = 0; i < pixels.length; i+=4)
 			{
 				if(pixels[i+3]/255 > 0.1)
