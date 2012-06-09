@@ -6,6 +6,18 @@ function MWCanvas(canvas)
 	{
 		var context = canvas.getContext("2d");
 	
+		context.globalAlpha = 1;
+				
+		context.fillStyle = '#ffffff';
+		context.fillRect(0, 0, canvas.width, canvas.height);
+		
+		//set alpha to 0
+		var imageData = context.getImageData(0, 0, 800, 600);
+		var pixels = imageData.data;
+		for(var i = 0; i < pixels.length; i+=4)
+			pixels[i+3] = 0;
+		context.putImageData(imageData, 0, 0);
+		
 		context.globalAlpha = 0.1;
 		
 		// Text

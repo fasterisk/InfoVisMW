@@ -6,6 +6,15 @@ function MWTextHandler()
 
 	this.ReadText = function(text)
 	{
+		//remove . , " etc. from text
+		text = text.replace(/,/g, "");
+		text = text.replace(/\./g, "");
+		text = text.replace(/"/g, "");
+		text = text.replace(/;/g, "");
+		text = text.replace(/:/g, "");
+		text = text.replace(/'/g, "");
+		
+		
 		aWordList = new Array();
 		Debugger.log("TEXT CHANGED");
 		var currentPos = 0;
