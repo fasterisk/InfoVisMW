@@ -85,4 +85,9 @@ function MWTextHandler()
 			Debugger.log(aWordList[i].sWord + " " + aWordList[i].iCount);
 		}
 	};
+	
+	this.GetWordList = function()
+	{
+		return aWordList;
+	}
 };

@@ -2,52 +2,36 @@ function MWCanvas(canvas)
 {
 	this.canvas = canvas;
 	
-	this.text = "text";
-	this.fillOrStroke = "fill";
-	this.fontSize = "50";
-	this.font = "serif";
-	this.textFillColor = "#ff0000";
-	this.fontWeight = "normal";
-	this.fontStyle = "normal";
-
 	this.Draw = function()
 	{
 		var context = canvas.getContext("2d");
+	
+		context.globalAlpha = 0.1;
 		
-		// Background
-		context.fillStyle = '#ffffaa';
-		context.fillRect(0, 0, canvas.width, canvas.height);
-
-		// Box
-		context.fillStyle = '#000000';
-		context.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
-
 		// Text
 		context.textBaseline = "middle";
 		context.textAlign = "center";
-		context.font = this.fontWeight + " " + this.fontStyle + " " + this.fontSize + "px "
-				+ this.font;
-
-		var xPosition = (canvas.width / 2);
-		var yPosition = (canvas.height / 2);
-
-		switch (this.fillOrStroke)
+		
+		var xPos = (canvas.width / 2);
+		var yPos = (canvas.height / 2);
+		
+		var aWordList = window.TextHandler.GetWordList();
+		
+		for(var i = 0; i < aWordList.length; i++)
 		{
-		case "fill":
-			context.fillStyle = this.textFillColor;
-			context.fillText(this.text, xPosition, yPosition);
-			break;
-		case "stroke":
-			context.strokeStyle = this.textFillColor;
-			context.strokeText(this.text, xPosition, yPosition);
-			break;
-		case "both":
-			context.fillStyle = this.textFillColor;
-			context.fillText(this.text, xPosition, yPosition);
-			context.strokeStyle = "#000000";
-			context.strokeText(this.text, xPosition, yPosition);
-			break;
+			aWordList[i].Draw(context, xPos, yPos);
 		}
+		
+		//set alpha to 255
+		var imageData = context.getImageData(0, 0, 800, 600);
+		var pixels = imageData.data;
+		
+		for(var i = 0; i < pixels.length; i+=4)
+		{
+			pixels[i+3] *= 10;
+		}
+		
+		context.putImageData(imageData, 0, 0);
 	};
 	
 	this.SetText = function(text)

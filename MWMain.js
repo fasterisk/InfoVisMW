@@ -3,6 +3,7 @@ window.addEventListener('load', eventWindowLoaded, false);
 function eventWindowLoaded()
 {
 	window.TextHandler = new MWTextHandler();
+	window.TextHandler.ReadText("text bla bla text text asou");
 	MainApp();
 }
 	
