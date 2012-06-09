@@ -4,12 +4,18 @@ function MWWord(word)
 	this.iCount = 1;
 	this.sFont = "serif";
 	this.sFillColor = "#ff0000";
-	this.sFontWeight = "normal";
+	this.sFontWeight = "bold";
 	this.sFontStyle = "normal";
+	this.sFillOrStroke = "fill";
 	
 	this.IncreaseCount = function()
 	{
 		this.iCount++;
+	};
+	
+	this.ChangeFillOrStroke = function(fillorstroke)
+	{
+		this.sFillOrStroke = fillorstroke;
 	};
 	
 	this.ChangeFont = function(font)
@@ -58,7 +64,6 @@ function MWWord(word)
 			
 			
 			var imageData = context.getImageData(xPos-textWidth/2, yPos-textWidth/2, textWidth, textWidth);
-			//var imageData = context.getImageData(0, 0, 800, 600);
 			var pixels = imageData.data;
 			
 			var bCollides = false;

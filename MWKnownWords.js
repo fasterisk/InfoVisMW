@@ -36,7 +36,9 @@ aKnownWords.push("through");
 aKnownWords.push("any");
 aKnownWords.push("its");
 aKnownWords.push("more");
-aKnownWords.push("");
+aKnownWords.push("cant");
+aKnownWords.push("because");
+aKnownWords.push("even");
 
 function IsWordInKnownList(word)
 {

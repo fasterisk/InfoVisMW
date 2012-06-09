@@ -1,6 +1,11 @@
 function MWCanvas(canvas)
 {
 	this.canvas = canvas;
+	this.sFillOrStroke = "fill";
+	this.sFont = "serif";
+	this.sFillColor = "#ff0000";
+	this.sFontWeight = "normal";
+	this.sFontStyle = "normal";
 	
 	this.Draw = function()
 	{
@@ -47,38 +52,41 @@ function MWCanvas(canvas)
 		context.putImageData(imageData, 0, 0);
 	};
 	
-	this.SetText = function(text)
+	this.UpdateWordStyles = function() 
 	{
-		this.text = text;
+		var aWordList = window.TextHandler.GetWordList();
+		for(var i = 0; i < aWordList.length; i++)
+		{
+			aWordList[i].ChangeFont(this.sFont);
+			aWordList[i].ChangeFillOrStroke(this.sFillOrStroke);
+			aWordList[i].ChangeFillColor(this.sFillColor);
+			aWordList[i].ChangeFontWeight(this.sFontWeight);
+			aWordList[i].ChangeFontStyle(this.sFontStyle);
+		}
 	};
 	
 	this.SetFillOrStroke = function(fillOrStroke)
 	{
-		this.fillOrStroke = fillOrStroke;
-	};
-	
-	this.SetFontSize = function(fontsize)
-	{
-		this.fontSize = fontsize;
+		this.sFillOrStroke = fillOrStroke;
 	};
 	
 	this.SetFillColor = function(fillcolor)
 	{
-		this.textFillColor = fillcolor;
+		this.sFillColor = fillcolor;
 	};
 	
 	this.SetFont = function(font)
 	{
-		this.font = font;
+		this.sFont = font;
 	};
 	
 	this.SetFontWeight = function(fontweight)
 	{
-		this.fontWeight = fontweight;
+		this.sFontWeight = fontweight;
 	};
 	
 	this.SetFontStyle = function(fontstyle)
 	{
-		this.fontStyle = fontstyle;
+		this.sFontStyle = fontstyle;
 	};
 }

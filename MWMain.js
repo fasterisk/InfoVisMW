@@ -3,7 +3,7 @@ window.addEventListener('load', eventWindowLoaded, false);
 function eventWindowLoaded()
 {
 	window.TextHandler = new MWTextHandler();
-	window.CurrentText = "maniwordle maniwordle maniwordle maniwordle";
+	window.CurrentText = "maniwordle maniwordle maniwordle maniwordle maniwordle";
 	window.TextHandler.ReadText(window.CurrentText);
 	MainApp();
 }
@@ -29,9 +29,6 @@ function MainApp()
 	formElement = document.getElementById("fillOrStroke");
 	formElement.addEventListener('change', fillOrStrokeChanged, false);
 
-	formElement = document.getElementById("textSize");
-	formElement.addEventListener('change', textSizeChanged, false);
-
 	formElement = document.getElementById("textFillColor");
 	formElement.addEventListener('change', textFillColorChanged, false);
 
@@ -56,6 +53,7 @@ function MainApp()
 	function submitButtonClicked(e)
 	{
 		window.TextHandler.ReadText(window.CurrentText);
+		window.Canvas.UpdateWordStyles();
 		window.Canvas.Draw();
 	}
 
@@ -63,41 +61,29 @@ function MainApp()
 	{
 		var target = e.target;
 		window.Canvas.SetFillOrStroke(target.value);
-		window.Canvas.Draw();
-	}
-
-	function textSizeChanged(e)
-	{
-		var target = e.target;
-		window.Canvas.SetFontSize(target.value);
-		window.Canvas.Draw();
 	}
 
 	function textFillColorChanged(e)
 	{
 		var target = e.target;
 		window.Canvas.SetFillColor("#" + target.value);
-		window.Canvas.Draw();
 	}
 
 	function textFontChanged(e)
 	{
 		var target = e.target;
 		window.Canvas.SetFont(target.value);
-		window.Canvas.Draw();
 	}
 
 	function fontWeightChanged(e)
 	{
 		var target = e.target;
 		window.Canvas.SetFontWeight(target.value);
-		window.Canvas.Draw();
 	}
 
 	function fontStyleChanged(e)
 	{
 		var target = e.target;
 		window.Canvas.SetFontStyle(target.value);
-		window.Canvas.Draw();
 	}
 }
