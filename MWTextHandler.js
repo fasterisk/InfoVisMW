@@ -1,11 +1,3 @@
-var knownWords = new Array();
-knownWords.push("the");
-knownWords.push("der");
-knownWords.push("ein");
-knownWords.push("eine");
-// todo: erweitern
-
-
 function MWTextHandler()
 {
 	/* private members */
@@ -19,6 +11,7 @@ function MWTextHandler()
 		var currentPos = 0;
 		var newWordStr = "";
 		var wordInWordlist = false;
+		var wordInKnownList = false;
 		var nextPos = text.indexOf(" ", currentPos);
 		var enter = text.indexOf("/n", currentPos);
 		if (enter != -1 && enter < currentPos)
@@ -28,9 +21,11 @@ function MWTextHandler()
 
 		while (nextPos != -1)
 		{
-			newWordStr = text.substring(currentPos, nextPos);
+			newWordStr = text.substring(currentPos, nextPos).toLowerCase();
 			wordInWordlist = false;
-			if (newWordStr.length > 2)
+			wordInKnownList = IsWordInKnownList(newWordStr);
+
+			if (newWordStr.length > 2 && !wordInKnownList)
 			{
 				// Debugger.log(newWordStr);
 				for ( var i = 0; i < aWordList.length; i++)
@@ -57,9 +52,10 @@ function MWTextHandler()
 				nextPos = enter;
 			}
 		}
-		newWordStr = text.substring(currentPos, text.length);
-
-		if (newWordStr.length > 2)
+		newWordStr = text.substring(currentPos, text.length).toLowerCase();
+		wordInKnownList = IsWordInKnownList(newWordStr);
+		
+		if (newWordStr.length > 2 && !wordInKnownList)
 		{
 			wordInWordlist = false;
 			// Debugger.log(newWordStr);

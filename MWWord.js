@@ -46,22 +46,29 @@ function MWWord(word)
 		var bLeft = false;
 		
 		var OldImageData = context.getImageData(0, 0, 800, 600);
-		var iMoveValue = 0;
+		var iCount = 0;
+		var iCurrentValue = 1;
+		
+		var textWidth = context.measureText(this.sWord).width;
 		
 		var bCanBeDrawn = false;
 		while(!bCanBeDrawn)
 		{
 			context.fillText(this.sWord, xPos, yPos);
-			var imageData = context.getImageData(0, 0, 800, 600);
+			
+			
+			var imageData = context.getImageData(xPos-textWidth/2, yPos-textWidth/2, textWidth, textWidth);
+			//var imageData = context.getImageData(0, 0, 800, 600);
 			var pixels = imageData.data;
 			
 			var bCollides = false;
 			
+			Debugger.log(pixels.length);
 			for(var i = 0; i < pixels.length; i+=4)
 			{
 				if(pixels[i+3]/255 > 0.1)
 				{
-					Debugger.log(pixels[i+3]/255);
+//					Debugger.log(pixels[i+3]/255);
 					bCollides = true;
 					break;
 				}
@@ -69,36 +76,58 @@ function MWWord(word)
 			
 			if(bCollides)
 			{
-				Debugger.log(this.sWord+" cannot be drawn - collides");
+//				Debugger.log(this.sWord+" cannot be drawn - collides");
 				context.putImageData(OldImageData, 0, 0);
-				iMoveValue++;
 				if(bRight)
 				{
-					xPos+=iMoveValue;
-					bRight = false;
-					bDown = true;
-					Debugger.log("RIGHT");
+					xPos+=20;
+					iCount++;
+					if(iCount == iCurrentValue)
+					{
+						bRight = false;
+						bDown = true;
+						iCount = 0;
+					}
+					
+//					Debugger.log("RIGHT");
 				}
 				else if(bDown)
 				{
-					yPos+=iMoveValue;
-					bDown = false;
-					bLeft = true;
-					Debugger.log("DOWN");
+					yPos+=20;
+					iCount++;
+					if(iCount == iCurrentValue)
+					{
+						bDown = false;
+						bLeft = true;
+						iCount = 0;
+						iCurrentValue++;
+					}
+//					Debugger.log("DOWN");
 				}
 				else if(bLeft)
 				{
-					xPos-=iMoveValue;
-					bLeft = false;
-					bUp = true;
-					Debugger.log("LEFT");
+					xPos-=20;
+					iCount++;
+					if(iCount == iCurrentValue)
+					{
+						bLeft = false;
+						bUp = true;
+						iCount = 0;
+					}
+//					Debugger.log("LEFT");
 				}
 				else if(bUp)
 				{
-					yPos-=iMoveValue;
-					bUp = false;
-					bRight = true;
-					Debugger.log("UP");
+					yPos-=20;
+					iCount++;
+					if(iCount == iCurrentValue)
+					{
+						bUp = false;
+						bRight = true;
+						iCount = 0;
+						iCurrentValue++;
+					}
+//					Debugger.log("UP");
 				}
 			}
 			else

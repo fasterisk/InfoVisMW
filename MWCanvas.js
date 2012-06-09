@@ -19,7 +19,8 @@ function MWCanvas(canvas)
 		
 		for(var i = 0; i < aWordList.length; i++)
 		{
-			aWordList[i].Draw(context, xPos, yPos);
+			if(aWordList[i].iCount > 1)
+				aWordList[i].Draw(context, xPos, yPos);
 		}
 		
 		//set alpha to 255
