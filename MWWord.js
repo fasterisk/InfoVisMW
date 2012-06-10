@@ -73,7 +73,7 @@ function MWWord(word)
 			draggable: true
 		});
 		
-		this.textShape.setRotationDeg(90);
+		this.textShape.setRotationDeg(this.iTextRotation);
 		
 		this.textShape.on("dragmove", function() {
 			this.textShape.saveData();
@@ -100,6 +100,14 @@ function MWWord(word)
 			}
 		}
 		
+		var bDown = false;
+		var bUp = false;
+		var bRight = true;
+		var bLeft = false;
+		
+		var iCount = 0;
+		var iCurrentValue = 1;
+		
 		var comparisons = 0;
 		var bCanBeDrawn = false;
 		var bCollisionDetected = false;
@@ -115,6 +123,7 @@ function MWWord(word)
 				this.textShape.saveData();
 				break;
 			}
+			
 			
 			bCollisionDetected = false;
 			bCanBeDrawn = true;
@@ -134,12 +143,70 @@ function MWWord(word)
 					{
 						bCollisionDetected = true;
 						bCanBeDrawn = false;
-						xPos++;
-						this.textShape.setX(xPos);
+						
+						var oldX = xPos;
+						var oldY = yPos;
+						if(bRight)
+						{
+							xPos+=20;
+							iCount++;
+							if(iCount == iCurrentValue)
+							{
+								bRight = false;
+								bDown = true;
+								iCount = 0;
+							}
+							
+//							Debugger.log("RIGHT");
+						}
+						else if(bDown)
+						{
+							yPos+=20;
+							iCount++;
+							if(iCount == iCurrentValue)
+							{
+								bDown = false;
+								bLeft = true;
+								iCount = 0;
+								iCurrentValue++;
+							}
+//							Debugger.log("DOWN");
+						}
+						else if(bLeft)
+						{
+							xPos-=20;
+							iCount++;
+							if(iCount == iCurrentValue)
+							{
+								bLeft = false;
+								bUp = true;
+								iCount = 0;
+							}
+//							Debugger.log("LEFT");
+						}
+						else if(bUp)
+						{
+							yPos-=20;
+							iCount++;
+							if(iCount == iCurrentValue)
+							{
+								bUp = false;
+								bRight = true;
+								iCount = 0;
+								iCurrentValue++;
+							}
+//							Debugger.log("UP");
+						}
+						
 						for(var k = 0; k < points.length; k++)
 						{
-							points[k].x++;
+							points[k].x += xPos-oldX;
+							points[k].y += yPos-oldY;
 						}
+						
+						this.textShape.setX(xPos);
+						this.textShape.setY(yPos);
+						
 //						Debugger.log("Collision Detected 1");
 						break;
 					}
@@ -153,7 +220,7 @@ function MWWord(word)
 			
 			//setTimeout("ShowDelayMessage()",3000);
 		}
-		Debugger.log("Comparisons: "+comparisons);
+//		Debugger.log("Comparisons: "+comparisons);
 		layer.draw();
 		
 		/*var context = canvas.getContext("2d");
