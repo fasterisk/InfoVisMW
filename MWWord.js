@@ -19,6 +19,8 @@ function MWWord(word)
 	this.iSpanWidth;
 	this.aDrawnPoints = new Array();
 	this.textShape;
+	this.startX;
+	this.startY;
 	
 	this.IncreaseCount = function()
 	{
@@ -56,18 +58,17 @@ function MWWord(word)
 		this.iTextRotation = rotation;
 	};
 	
-	GetDrawnPointArray = function(shape, posX, posY, spanwidth)
+	this.UpdateDrawnPointArray = function()
 	{
-		var aDrawnPoints = new Array();
-		for(var y = posY-spanwidth; y < posY+spanwidth; y++)
+		this.aDrawnPoints = new Array();
+		for(var y = this.iPosY-this.iSpanWidth; y < this.iPosY+this.iSpanWidth; y++)
 		{
-			for(var x = posX-spanwidth; x < posX+spanwidth; x++)
+			for(var x = this.iPosX-this.iSpanWidth; x < this.iPosX+this.iSpanWidth; x++)
 			{
-				if(shape.intersects(x,y))
-					aDrawnPoints.push(new POINT(x,y));
+				if(this.textShape.intersects(x,y))
+					this.aDrawnPoints.push(new POINT(x,y));
 			}
 		}
-		return aDrawnPoints;
 	};
 	
 	this.Draw = function(layer, stageWidth, stageHeight, aDrawnWords)
@@ -79,7 +80,7 @@ function MWWord(word)
 		this.iPosY = stageHeight / 2;
 		
 		//create textshape
-		var shape = new Kinetic.Text({
+		this.textShape = new Kinetic.Text({
 			x: this.iPosX,
 			y: this.iPosY,
 			text: this.sWord,
@@ -94,62 +95,98 @@ function MWWord(word)
 		});
 		
 		//rotate text according to the rotation
-		shape.setRotationDeg(this.iTextRotation);
+		this.textShape.setRotationDeg(this.iTextRotation);
 		
 		//add text to the layer (for being able to get parameters as width, height or intersects)
-		layer.add(shape);
-		shape.saveData();
+		layer.add(this.textShape);
+		this.textShape.saveData();
+		
+		//get the maximum span width of the word
+		this.iSpanWidth = Math.max(this.textShape.getTextWidth(), this.textShape.getTextHeight());
+		
 		
 		//add eventlistener
-		shape.on("dragmove", function() {
-			shape.saveData();
+		var thisword = this.sWord;
+		this.textShape.on("dragstart", function() {
+			var word = window.TextHandler.GetWord(thisword); 
+			word.startX = word.iPosX;
+			word.startY = word.iPosY;
+		});
+		
+		this.textShape.on("dragmove", function() {
+			document.body.style.cursor = "pointer";
+			
+			var word = window.TextHandler.GetWord(thisword); 
+			word.textShape.saveData();
 
-			layer.remove(shape);
+			layer.remove(word.textShape);
 			
 			var layerChildren = layer.getChildren();
 			for(var i = 0; i < layerChildren.length; i++)
 				layerChildren[i].setAlpha(0.5);
 				
-			layer.add(shape);
+			layer.add(word.textShape);
 			//layer.draw();
+			
 		});
 		
-		shape.on("dragend", function() {
-			shape.saveData();
+		this.textShape.on("dragend", function() {
 			
-			var aDrawnPoints = GetDrawnPointArray(shape, shape.getX(), shape.getY(), Math.max(shape.getTextWidth(), shape.getTextHeight()));
+			var word = window.TextHandler.GetWord(thisword);
+			word.textShape.saveData();
+			word.iPosX = word.textShape.getX();
+			word.iPosY = word.textShape.getY();
 			
-			layer.remove(shape);
+			word.UpdateDrawnPointArray();
+			
+			layer.remove(word.textShape);
 			
 			var layerChildren = layer.getChildren();
 			for(var i = 0; i < layerChildren.length; i++)
 				layerChildren[i].setAlpha(1);
 			
-			for(var i = 0; i < aDrawnPoints.length; i++)
+			for(var i = 0; i < word.aDrawnPoints.length; i++)
 			{
-				var x = aDrawnPoints[i].x;
-				var y = aDrawnPoints[i].y;
-				for(var j = 0; j < layerChildren.length; j++)
+				if(i%5 == 0)
 				{
-					if(layerChildren[j].intersects(x,y) && shape.intersects(x,y))
+					var x = word.aDrawnPoints[i].x;
+					var y = word.aDrawnPoints[i].y;
+					for(var j = 0; j < layerChildren.length; j++)
 					{
-						layerChildren[j].transitionTo({
-							x: 0,
-							y: 0,
-							duration: 1,
-						});
+						if(layerChildren[j].intersects(x,y) && word.textShape.intersects(x,y))
+						{
+							if(layerChildren[j].getFontSize() > word.textShape.getFontSize())
+							{
+								word.textShape.transitionTo({
+									x: word.startX,
+									y: word.startY,
+									duration: 0.2,
+									callback: function() {
+										word.iPosX = word.startX;
+										word.iPosY = word.startY;
+										word.textShape.saveData();
+									}
+								});
+								
+							}
+						}
 					}
 				}
 			}
-			layer.add(shape);
+			document.body.style.cursor = "default";
+			layer.add(word.textShape);
 			layer.draw();
 		});
 		
-		//get the maximum span width of the word
-		this.iSpanWidth = Math.max(shape.getTextWidth(), shape.getTextHeight());
+		this.textShape.on("mouseover", function() {
+			document.body.style.cursor = "pointer";
+		});
+		this.textShape.on("mouseout", function() {
+			document.body.style.cursor = "default";
+		});
 		
 		//create an array that contains all drawn points of this word
-		var aDrawnPoints = GetDrawnPointArray(shape, this.iPosX, this.iPosY, this.iSpanWidth);
+		this.UpdateDrawnPointArray();
 		
 		//only one of these can be true, it is the direction that the word has to move when a collision occurs
 		var bDown = false;
@@ -172,7 +209,7 @@ function MWWord(word)
 		while(!bCanBeDrawn)
 		{
 			//remove this shape to get only the children of the layer that need to be compared
-			layer.remove(shape);
+			layer.remove(this.textShape);
 			
 			//get other children of this layer
 			var layerChildren = layer.getChildren();
@@ -180,99 +217,103 @@ function MWWord(word)
 			//if current word is the first one, you can draw it directly
 			if(layerChildren.length == 0)
 			{
-				layer.add(shape);
-				shape.saveData();
+				layer.add(this.textShape);
+				this.textShape.saveData();
 				break;
 			}
 			
 			bCollisionDetected = false;
 			bCanBeDrawn = true;
 			//go through all the points of the current text and look if it collides with a point at the layer
-			for(var i = 0; i < aDrawnPoints.length; i++)
+			for(var i = 0; i < this.aDrawnPoints.length; i++)
 			{
+				
 				if(bCollisionDetected)
 				{
 //					Debugger.log("Collision Detected 2");
 					break;
 				}
 				//get current point
-				var x = aDrawnPoints[i].x;
-				var y = aDrawnPoints[i].y;
+				var x = this.aDrawnPoints[i].x;
+				var y = this.aDrawnPoints[i].y;
 				
-				//go through all children for collision detection
-				for(var j = 0; j < layerChildren.length; j++)
+				if(i%5==0)
 				{
-					comparisons++;
-					//if collision is detected, move the current text by a certain amount
-					if(layerChildren[j].intersects(x,y) && shape.intersects(x,y))
+					//go through all children for collision detection
+					for(var j = 0; j < layerChildren.length; j++)
 					{
-						bCollisionDetected = true;
-						bCanBeDrawn = false;
-						
-						var oldX = this.iPosX;
-						var oldY = this.iPosY;
-						if(bRight)
+						comparisons++;
+						//if collision is detected, move the current text by a certain amount
+						if(layerChildren[j].intersects(x,y) && this.textShape.intersects(x,y))
 						{
-							this.iPosX+=20;
-							iCount++;
-							if(iCount == iCurrentValue)
+							bCollisionDetected = true;
+							bCanBeDrawn = false;
+							
+							var oldX = this.iPosX;
+							var oldY = this.iPosY;
+							if(bRight)
 							{
-								bRight = false;
-								bDown = true;
-								iCount = 0;
+								this.iPosX+=20;
+								iCount++;
+								if(iCount == iCurrentValue)
+								{
+									bRight = false;
+									bDown = true;
+									iCount = 0;
+								}
+//								Debugger.log("RIGHT");
 							}
-//							Debugger.log("RIGHT");
-						}
-						else if(bDown)
-						{
-							this.iPosY+=20;
-							iCount++;
-							if(iCount == iCurrentValue)
+							else if(bDown)
 							{
-								bDown = false;
-								bLeft = true;
-								iCount = 0;
-								iCurrentValue++;
+								this.iPosY+=20;
+								iCount++;
+								if(iCount == iCurrentValue)
+								{
+									bDown = false;
+									bLeft = true;
+									iCount = 0;
+									iCurrentValue++;
+								}
+//								Debugger.log("DOWN");
 							}
-//							Debugger.log("DOWN");
-						}
-						else if(bLeft)
-						{
-							this.iPosX-=20;
-							iCount++;
-							if(iCount == iCurrentValue)
+							else if(bLeft)
 							{
-								bLeft = false;
-								bUp = true;
-								iCount = 0;
+								this.iPosX-=20;
+								iCount++;
+								if(iCount == iCurrentValue)
+								{
+									bLeft = false;
+									bUp = true;
+									iCount = 0;
+								}
+//								Debugger.log("LEFT");
 							}
-//							Debugger.log("LEFT");
-						}
-						else if(bUp)
-						{
-							this.iPosY-=20;
-							iCount++;
-							if(iCount == iCurrentValue)
+							else if(bUp)
 							{
-								bUp = false;
-								bRight = true;
-								iCount = 0;
-								iCurrentValue++;
+								this.iPosY-=20;
+								iCount++;
+								if(iCount == iCurrentValue)
+								{
+									bUp = false;
+									bRight = true;
+									iCount = 0;
+									iCurrentValue++;
+								}
+//								Debugger.log("UP");
 							}
-//							Debugger.log("UP");
+						
+							for(var k = 0; k < this.aDrawnPoints.length; k++)
+							{
+								this.aDrawnPoints[k].x += this.iPosX-oldX;
+								this.aDrawnPoints[k].y += this.iPosY-oldY;
+							}
+						
+							this.textShape.setX(this.iPosX);
+							this.textShape.setY(this.iPosY);
+						
+//							Debugger.log("Collision Detected 1");
+							break;
 						}
-						
-						for(var k = 0; k < aDrawnPoints.length; k++)
-						{
-							aDrawnPoints[k].x += this.iPosX-oldX;
-							aDrawnPoints[k].y += this.iPosY-oldY;
-						}
-						
-						shape.setX(this.iPosX);
-						shape.setY(this.iPosY);
-						
-//						Debugger.log("Collision Detected 1");
-						break;
 					}
 				}
 			}
@@ -280,12 +321,10 @@ function MWWord(word)
 			
 //			Debugger.log("Can be drawn? "+bCanBeDrawn + " "+this.textShape.getX());
 			//add the shape to the layer again
-			layer.add(shape);
-			shape.saveData();
+			layer.add(this.textShape);
+			this.textShape.saveData();
 		}
 //		Debugger.log("Comparisons: "+comparisons);
-		
-		this.textShape = shape;
 		
 		//Draw the layer
 		layer.draw();
