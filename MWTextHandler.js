@@ -14,6 +14,7 @@ function MWTextHandler()
 		text = text.replace(/\:/g, "");
 		text = text.replace(/\'/g, "");
 		
+		this.aWordList = new Array();
 		
 		Debugger.log("TEXT CHANGED");
 		var currentPos = 0;

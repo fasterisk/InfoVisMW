@@ -41,6 +41,9 @@ function MainApp()
 	formElement = document.getElementById("fontStyle");
 	formElement.addEventListener('change', fontStyleChanged, false);
 	
+	formElement = document.getElementById("textRotation");
+	formElement.addEventListener('change', textRotationChanged, false);
+	
 	//Initial DrawScreen call
 	window.Canvas.Draw();
 
@@ -85,5 +88,11 @@ function MainApp()
 	{
 		var target = e.target;
 		window.Canvas.SetFontStyle(target.value);
+	}
+	
+	function textRotationChanged(e)
+	{
+		var target = e.target;
+		window.Canvas.SetTextRotation(target.value);
 	}
 }

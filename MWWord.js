@@ -7,6 +7,7 @@ function MWWord(word)
 	this.sFontWeight = "bold";
 	this.sFontStyle = "normal";
 	this.sFillOrStroke = "fill";
+	this.iTextRotation = 0;
 	
 	this.IncreaseCount = function()
 	{
@@ -38,6 +39,11 @@ function MWWord(word)
 		this.sFontStyle = fontstyle;
 	};
 	
+	this.ChangeRotation = function(rotation)
+	{
+		this.iTextRotation = rotation;
+	};
+	
 	this.Draw = function(context, xPos, yPos)
 	{
 		context.font = this.sFontWeight + " " + 
@@ -46,6 +52,9 @@ function MWWord(word)
 						this.sFont;
 		context.fillStyle = this.sFillColor;
 		context.strokeStyle = '#000000';
+		context.textAlign = 'center';
+		
+		
 		
 		var bDown = false;
 		var bUp = false;
@@ -56,32 +65,42 @@ function MWWord(word)
 		var iCount = 0;
 		var iCurrentValue = 1;
 		
-		var textWidth = context.measureText(this.sWord).width;
 		
 		var bCanBeDrawn = false;
 		while(!bCanBeDrawn)
 		{
+			context.translate(xPos, yPos);
+			context.rotate(this.iTextRotation*Math.PI/180);
+			
 			switch(this.sFillOrStroke)
 			{
 			case "fill":
-				context.fillText(this.sWord, xPos, yPos);
+//				context.fillText(this.sWord, xPos, yPos);
+				context.fillText(this.sWord, 0, 0);
 				break;
 			case "fill+stroke":
-				context.fillText(this.sWord, xPos, yPos);
-				context.strokeText(this.sWord, xPos, yPos);
+//				context.fillText(this.sWord, xPos, yPos);
+				context.fillText(this.sWord, 0, 0);
+//				context.strokeText(this.sWord, xPos, yPos);
+				context.strokeText(this.sWord, 0, 0);
 				break;
 			default:
-				context.fillText(this.sWord, xPos, yPos);
+//				context.fillText(this.sWord, xPos, yPos);
+				context.fillText(this.sWord, 0, 0);
 				break;
 			}
 			
+			context.rotate(-this.iTextRotation*Math.PI/180);
+			context.translate(-xPos, -yPos);
 			
-			var imageData = context.getImageData(xPos-textWidth/2, yPos-textWidth/2, textWidth, textWidth);
+			var textWidth = context.measureText(this.sWord).width;
+			
+			var imageData = context.getImageData(xPos-textWidth, yPos-textWidth, 2*textWidth, 2*textWidth);
 			var pixels = imageData.data;
 			
 			var bCollides = false;
 			
-			Debugger.log("Drawing Word: "+ this.sWord);
+//			Debugger.log("Drawing Word: "+ this.sWord);
 			for(var i = 0; i < pixels.length; i+=4)
 			{
 				if(pixels[i+3]/255 > 0.1)
@@ -153,5 +172,6 @@ function MWWord(word)
 				bCanBeDrawn = true;
 			}
 		}
+		
 	};	
 }

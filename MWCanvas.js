@@ -6,6 +6,7 @@ function MWCanvas(canvas)
 	this.sFillColor = "#ff0000";
 	this.sFontWeight = "normal";
 	this.sFontStyle = "normal";
+	this.iTextRotation = 0;
 	
 	this.Draw = function()
 	{
@@ -62,6 +63,10 @@ function MWCanvas(canvas)
 			aWordList[i].ChangeFillColor(this.sFillColor);
 			aWordList[i].ChangeFontWeight(this.sFontWeight);
 			aWordList[i].ChangeFontStyle(this.sFontStyle);
+			if(i%2 == 0)
+				aWordList[i].ChangeRotation(this.iTextRotation);
+			else
+				aWordList[i].ChangeRotation(this.iTextRotation - 90);
 		}
 	};
 	
@@ -88,5 +93,10 @@ function MWCanvas(canvas)
 	this.SetFontStyle = function(fontstyle)
 	{
 		this.sFontStyle = fontstyle;
+	};
+	
+	this.SetTextRotation = function(rotation)
+	{
+		this.iTextRotation = rotation;
 	};
 }
