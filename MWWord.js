@@ -56,17 +56,18 @@ function MWWord(word)
 		this.iTextRotation = rotation;
 	};
 	
-	this.UpdateDrawnPointArray = function(shape)
+	GetDrawnPointArray = function(shape, posX, posY, spanwidth)
 	{
-		this.aDrawnPoints = new Array();
-		for(var y = this.iPosY-this.iSpanWidth; y < this.iPosY+this.iSpanWidth; y++)
+		var aDrawnPoints = new Array();
+		for(var y = posY-spanwidth; y < posY+spanwidth; y++)
 		{
-			for(var x = this.iPosX-this.iSpanWidth; x < this.iPosX+this.iSpanWidth; x++)
+			for(var x = posX-spanwidth; x < posX+spanwidth; x++)
 			{
 				if(shape.intersects(x,y))
-					this.aDrawnPoints.push(new POINT(x,y));
+					aDrawnPoints.push(new POINT(x,y));
 			}
 		}
+		return aDrawnPoints;
 	};
 	
 	this.Draw = function(layer, stageWidth, stageHeight, aDrawnWords)
@@ -102,12 +103,37 @@ function MWWord(word)
 		//add eventlistener
 		shape.on("dragmove", function() {
 			shape.saveData();
-			
+			var aDrawnPoints = GetDrawnPointArray(shape, shape.getX(), shape.getY(), Math.max(shape.getTextWidth(), shape.getTextHeight()));
 			layer.remove(shape);
 			var layerChildren = layer.getChildren();
 			for(var i = 0; i < layerChildren.length; i++)
 			{
 				layerChildren[i].setAlpha(0.5);
+				
+			}
+			
+			for(var i = 0; i < aDrawnPoints.length; i++)
+			{
+				var x = aDrawnPoints[i].x;
+				var y = aDrawnPoints[i].y;
+				for(var j = 0; j < layerChildren.length; j++)
+				{
+					if(layerChildren[j].intersects(x,y) && shape.intersects(x,y))
+					{
+						layerChildren[j].transitionTo({
+				            x: 0,
+				            y: 0,
+				            rotation: Math.PI * 2,
+				            alpha: 1,
+				            strokeWidth: 6,
+				            scale: {
+				              x: 1.3,
+				              y: 1.3
+				            },
+				            duration: 1,
+				          });
+					}
+				}
 			}
 			layer.add(shape);
 			layer.draw();
@@ -128,7 +154,7 @@ function MWWord(word)
 		this.iSpanWidth = Math.max(shape.getTextWidth(), shape.getTextHeight());
 		
 		//create an array that contains all drawn points of this word
-		this.UpdateDrawnPointArray(shape);
+		var aDrawnPoints = GetDrawnPointArray(shape, this.iPosX, this.iPosY, this.iSpanWidth);
 		
 		//only one of these can be true, it is the direction that the word has to move when a collision occurs
 		var bDown = false;
@@ -167,7 +193,7 @@ function MWWord(word)
 			bCollisionDetected = false;
 			bCanBeDrawn = true;
 			//go through all the points of the current text and look if it collides with a point at the layer
-			for(var i = 0; i < this.aDrawnPoints.length; i++)
+			for(var i = 0; i < aDrawnPoints.length; i++)
 			{
 				if(bCollisionDetected)
 				{
@@ -175,8 +201,8 @@ function MWWord(word)
 					break;
 				}
 				//get current point
-				var x = this.aDrawnPoints[i].x;
-				var y = this.aDrawnPoints[i].y;
+				var x = aDrawnPoints[i].x;
+				var y = aDrawnPoints[i].y;
 				
 				//go through all children for collision detection
 				for(var j = 0; j < layerChildren.length; j++)
@@ -241,10 +267,10 @@ function MWWord(word)
 //							Debugger.log("UP");
 						}
 						
-						for(var k = 0; k < this.aDrawnPoints.length; k++)
+						for(var k = 0; k < aDrawnPoints.length; k++)
 						{
-							this.aDrawnPoints[k].x += this.iPosX-oldX;
-							this.aDrawnPoints[k].y += this.iPosY-oldY;
+							aDrawnPoints[k].x += this.iPosX-oldX;
+							aDrawnPoints[k].y += this.iPosY-oldY;
 						}
 						
 						shape.setX(this.iPosX);
