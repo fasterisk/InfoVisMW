@@ -1,3 +1,9 @@
+function POINT(x,y){
+	this.x = x;
+	this.y = y;
+}
+
+
 function MWWord(word) 
 {
 	this.sWord = word;
@@ -84,7 +90,17 @@ function MWWord(word)
 		
 		var maxDist = Math.max(textWidth, textHeight);
 		
+		var points = new Array();
+		for(var y = yPos-maxDist; y < yPos+maxDist; y++)
+		{
+			for(var x = xPos-maxDist; x < xPos+maxDist; x++)
+			{
+				if(this.textShape.intersects(x,y))
+					points.push(new POINT(x,y));
+			}
+		}
 		
+		var comparisons = 0;
 		var bCanBeDrawn = false;
 		var bCollisionDetected = false;
 		while(!bCanBeDrawn)
@@ -102,43 +118,42 @@ function MWWord(word)
 			
 			bCollisionDetected = false;
 			bCanBeDrawn = true;
-			for(var y = yPos-maxDist; y < yPos+maxDist; y++)
+			for(var i = 0; i < points.length; i++)
 			{
 				if(bCollisionDetected)
 				{
-//					Debugger.log("Collision Detected 3");
+//					Debugger.log("Collision Detected 2");
 					break;
 				}
-				for(var x = xPos-maxDist; x < xPos+maxDist; x++)
+				var x = points[i].x;
+				var y = points[i].y;
+				for(var j = 0; j < layerChildren.length; j++)
 				{
-					if(bCollisionDetected)
+					comparisons++;
+					if(layerChildren[j].intersects(x,y) && this.textShape.intersects(x,y))
 					{
-//						Debugger.log("Collision Detected 2");
-						break;
-					}
-					for(var i = 0; i < layerChildren.length; i++)
-					{
-						if(layerChildren[i].intersects(x,y) && this.textShape.intersects(x,y))
+						bCollisionDetected = true;
+						bCanBeDrawn = false;
+						xPos++;
+						this.textShape.setX(xPos);
+						for(var k = 0; k < points.length; k++)
 						{
-							bCollisionDetected = true;
-							bCanBeDrawn = false;
-							xPos++;
-							this.textShape.setX(xPos);
-//							Debugger.log("Collision Detected 1");
-							break;
+							points[k].x++;
 						}
+//						Debugger.log("Collision Detected 1");
+						break;
 					}
 				}
 			}
 			
-			Debugger.log("Can be drawn? "+bCanBeDrawn + " "+this.textShape.getX());
+//			Debugger.log("Can be drawn? "+bCanBeDrawn + " "+this.textShape.getX());
 			layer.add(this.textShape);
 			this.textShape.saveData();
 			//layer.draw();
 			
 			//setTimeout("ShowDelayMessage()",3000);
 		}
-		
+		Debugger.log("Comparisons: "+comparisons);
 		layer.draw();
 		
 		/*var context = canvas.getContext("2d");
