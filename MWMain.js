@@ -29,7 +29,15 @@ function MainApp()
 	formElement = document.getElementById("fillOrStroke");
 	formElement.addEventListener('change', fillOrStrokeChanged, false);
 
-	formElement = document.getElementById("textFillColor");
+	formElement = document.getElementById("textFillColor1");
+	formElement.addEventListener('change', textFillColorChanged, false);
+	formElement = document.getElementById("textFillColor2");
+	formElement.addEventListener('change', textFillColorChanged, false);
+	formElement = document.getElementById("textFillColor3");
+	formElement.addEventListener('change', textFillColorChanged, false);
+	formElement = document.getElementById("textFillColor4");
+	formElement.addEventListener('change', textFillColorChanged, false);
+	formElement = document.getElementById("textFillColor5");
 	formElement.addEventListener('change', textFillColorChanged, false);
 
 	formElement = document.getElementById("textFont");
@@ -69,7 +77,25 @@ function MainApp()
 	function textFillColorChanged(e)
 	{
 		var target = e.target;
-		window.Canvas.SetFillColor("#" + target.value);
+		switch(target.id)
+		{
+		case "textFillColor1":
+			window.Canvas.SetFillColor(1, "#" + target.value);
+			break;
+		case "textFillColor2":
+			window.Canvas.SetFillColor(2, "#" + target.value);
+			break;
+		case "textFillColor3":
+			window.Canvas.SetFillColor(3, "#" + target.value);
+			break;
+		case "textFillColor4":
+			window.Canvas.SetFillColor(4, "#" + target.value);
+			break;
+		case "textFillColor5":
+			window.Canvas.SetFillColor(5, "#" + target.value);
+			break;
+		}
+		
 	}
 
 	function textFontChanged(e)

@@ -3,7 +3,7 @@ function MWWord(word)
 	this.sWord = word;
 	this.iCount = 1;
 	this.sFont = "serif";
-	this.sFillColor = "#ff0000";
+	this.sFillColor = "ff0000";
 	this.sFontWeight = "bold";
 	this.sFontStyle = "normal";
 	this.sFillOrStroke = "fill";
@@ -26,6 +26,7 @@ function MWWord(word)
 	
 	this.ChangeFillColor = function(fillcolor)
 	{
+		//Debugger.log(fillcolor);
 		this.sFillColor = fillcolor;
 	};
 	
@@ -53,7 +54,6 @@ function MWWord(word)
 		context.fillStyle = this.sFillColor;
 		context.strokeStyle = '#000000';
 		context.textAlign = 'center';
-		
 		
 		
 		var bDown = false;

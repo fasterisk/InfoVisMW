@@ -3,7 +3,12 @@ function MWCanvas(canvas)
 	this.canvas = canvas;
 	this.sFillOrStroke = "fill";
 	this.sFont = "serif";
-	this.sFillColor = "#ff0000";
+	this.sBackgroundColor = "#ffffff";
+	this.sFillColor1 = "#ff0000";
+	this.sFillColor2 = "#00ff00";
+	this.sFillColor3 = "#0000ff";
+	this.sFillColor4 = "#ffff00";
+	this.sFillColor5 = "#ff00ff";
 	this.sFontWeight = "normal";
 	this.sFontStyle = "normal";
 	this.iTextRotation = 0;
@@ -67,6 +72,24 @@ function MWCanvas(canvas)
 				aWordList[i].ChangeRotation(this.iTextRotation);
 			else
 				aWordList[i].ChangeRotation(this.iTextRotation - 90);
+			switch(i%5)
+			{
+			case 0:
+				aWordList[i].ChangeFillColor(this.sFillColor1);
+				break;
+			case 1:
+				aWordList[i].ChangeFillColor(this.sFillColor2);
+				break;
+			case 2:
+				aWordList[i].ChangeFillColor(this.sFillColor3);
+				break;
+			case 3:
+				aWordList[i].ChangeFillColor(this.sFillColor4);
+				break;
+			case 4:
+				aWordList[i].ChangeFillColor(this.sFillColor5);
+				break;
+			}
 		}
 	};
 	
@@ -75,9 +98,29 @@ function MWCanvas(canvas)
 		this.sFillOrStroke = fillOrStroke;
 	};
 	
-	this.SetFillColor = function(fillcolor)
+	this.SetFillColor = function(id, fillcolor)
 	{
-		this.sFillColor = fillcolor;
+		switch(id)
+		{
+		case 1:
+			this.sFillColor1 = fillcolor;
+			break;
+		case 2:
+			this.sFillColor2 = fillcolor;
+			break;
+		case 3:
+			this.sFillColor3 = fillcolor;
+			break;
+		case 4:
+			this.sFillColor4 = fillcolor;
+			break;
+		case 5:
+			this.sFillColor5 = fillcolor;
+			break;
+		default:
+			this.sFillColor1 = fillcolor;
+			break;
+		}
 	};
 	
 	this.SetFont = function(font)
