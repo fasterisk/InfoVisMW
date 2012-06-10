@@ -30,41 +30,6 @@ function MainApp()
 		width: 800,
 		height: 600
 	});
-
-	
-	/*var hbox = new Kinetic.Text({
-		x: 100,
-		y: 70,
-		fontSize: 18,
-		fontFamily: "Calibri",
-		text: "text1",
-		textFill: "black",
-		padding: 15,
-		draggable: true,
-	});
-	
-	var vbox = new Kinetic.Text({
-		x: stage.getWidth() / 2,
-		y: 70,
-		fontSize: 18,
-		fontFamily: "Calibri",
-		text: "text2",
-		textFill: "black",
-		padding: 15,
-		draggable: true,
-	});
-
-	hbox.on("dragend", function() {
-		hbox.saveData();
-	});
-	
-	vbox.on("dragend", function() {
-		vbox.saveData();
-	});*/
-
-
-//	hbox.saveData();
-//	vbox.saveData();
 	
 	window.Canvas = new MWCanvas(stage);
 	

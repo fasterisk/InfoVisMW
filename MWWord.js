@@ -15,6 +15,10 @@ function MWWord(word)
 	this.sFillOrStroke = "fill";
 	this.iTextRotation = 0;
 	this.textShape;
+	this.iPosX;
+	this.iPosY;
+	this.iSpanWidth;
+	this.aDrawnPoints = new Array();
 	
 	this.IncreaseCount = function()
 	{
@@ -52,16 +56,31 @@ function MWWord(word)
 		this.iTextRotation = rotation;
 	};
 	
+	this.UpdateDrawnPointArray = function()
+	{
+		this.aDrawnPoints = new Array();
+		for(var y = this.iPosY-this.iSpanWidth; y < this.iPosY+this.iSpanWidth; y++)
+		{
+			for(var x = this.iPosX-this.iSpanWidth; x < this.iPosX+this.iSpanWidth; x++)
+			{
+				if(this.textShape.intersects(x,y))
+					this.aDrawnPoints.push(new POINT(x,y));
+			}
+		}
+	};
+	
 	this.Draw = function(layer, stageWidth, stageHeight, aDrawnWords)
 	{
 		Debugger.log("DRAWING: "+ this.sWord);
 		
-		var xPos = stageWidth / 2;
-		var yPos = stageHeight / 2;
+		//Initial drawing position
+		this.iPosX = stageWidth / 2;
+		this.iPosY = stageHeight / 2;
 		
+		//create textshape
 		this.textShape = new Kinetic.Text({
-			x: xPos,
-			y: yPos,
+			x: this.iPosX,
+			y: this.iPosY,
 			text: this.sWord,
 			fontSize: this.iCount*10,
 			fontFamily: this.sFont,
@@ -73,50 +92,51 @@ function MWWord(word)
 			draggable: true
 		});
 		
+		//rotate text according to the rotation
 		this.textShape.setRotationDeg(this.iTextRotation);
 		
+		//create eventlistener for the text-moving
 		this.textShape.on("dragmove", function() {
 			this.textShape.saveData();
 		});
 		
-		
+		//add text to the layer (for being able to get parameters as width, height or intersects)
 		layer.add(this.textShape);
 		this.textShape.saveData();
 		
-		var textWidth = this.textShape.getTextWidth();
-		var textHeight = this.textShape.getTextHeight();
-		var xPos = this.textShape.getX();
-		var yPos = this.textShape.getY();
+		//get the maximum span width of the word
+		this.iSpanWidth = Math.max(this.textShape.getTextWidth(), this.textShape.getTextHeight());
 		
-		var maxDist = Math.max(textWidth, textHeight);
+		//create an array that contains all drawn points of this word
+		this.UpdateDrawnPointArray();
 		
-		var points = new Array();
-		for(var y = yPos-maxDist; y < yPos+maxDist; y++)
-		{
-			for(var x = xPos-maxDist; x < xPos+maxDist; x++)
-			{
-				if(this.textShape.intersects(x,y))
-					points.push(new POINT(x,y));
-			}
-		}
-		
+		//only one of these can be true, it is the direction that the word has to move when a collision occurs
 		var bDown = false;
 		var bUp = false;
 		var bRight = true;
 		var bLeft = false;
 		
+		//how often the word was moved in one direction
 		var iCount = 0;
+		//how often the word has to be moved in one direction, before the direction has to be changed
 		var iCurrentValue = 1;
 		
+		//debug
 		var comparisons = 0;
+		
+		//true, as long no collision occurs
 		var bCanBeDrawn = false;
+		//true, when collision is detected
 		var bCollisionDetected = false;
 		while(!bCanBeDrawn)
 		{
+			//remove this shape to get only the children of the layer that need to be compared
 			layer.remove(this.textShape);
 			
+			//get other children of this layer
 			var layerChildren = layer.getChildren();
 			
+			//if current word is the first one, you can draw it directly
 			if(layerChildren.length == 0)
 			{
 				layer.add(this.textShape);
@@ -124,31 +144,35 @@ function MWWord(word)
 				break;
 			}
 			
-			
 			bCollisionDetected = false;
 			bCanBeDrawn = true;
-			for(var i = 0; i < points.length; i++)
+			//go through all the points of the current text and look if it collides with a point at the layer
+			for(var i = 0; i < this.aDrawnPoints.length; i++)
 			{
 				if(bCollisionDetected)
 				{
 //					Debugger.log("Collision Detected 2");
 					break;
 				}
-				var x = points[i].x;
-				var y = points[i].y;
+				//get current point
+				var x = this.aDrawnPoints[i].x;
+				var y = this.aDrawnPoints[i].y;
+				
+				//go through all children for collision detection
 				for(var j = 0; j < layerChildren.length; j++)
 				{
 					comparisons++;
+					//if collision is detected, move the current text by a certain amount
 					if(layerChildren[j].intersects(x,y) && this.textShape.intersects(x,y))
 					{
 						bCollisionDetected = true;
 						bCanBeDrawn = false;
 						
-						var oldX = xPos;
-						var oldY = yPos;
+						var oldX = this.iPosX;
+						var oldY = this.iPosY;
 						if(bRight)
 						{
-							xPos+=20;
+							this.iPosX+=20;
 							iCount++;
 							if(iCount == iCurrentValue)
 							{
@@ -156,12 +180,11 @@ function MWWord(word)
 								bDown = true;
 								iCount = 0;
 							}
-							
 //							Debugger.log("RIGHT");
 						}
 						else if(bDown)
 						{
-							yPos+=20;
+							this.iPosY+=20;
 							iCount++;
 							if(iCount == iCurrentValue)
 							{
@@ -174,7 +197,7 @@ function MWWord(word)
 						}
 						else if(bLeft)
 						{
-							xPos-=20;
+							this.iPosX-=20;
 							iCount++;
 							if(iCount == iCurrentValue)
 							{
@@ -186,7 +209,7 @@ function MWWord(word)
 						}
 						else if(bUp)
 						{
-							yPos-=20;
+							this.iPosY-=20;
 							iCount++;
 							if(iCount == iCurrentValue)
 							{
@@ -198,14 +221,14 @@ function MWWord(word)
 //							Debugger.log("UP");
 						}
 						
-						for(var k = 0; k < points.length; k++)
+						for(var k = 0; k < this.aDrawnPoints.length; k++)
 						{
-							points[k].x += xPos-oldX;
-							points[k].y += yPos-oldY;
+							this.aDrawnPoints[k].x += this.iPosX-oldX;
+							this.aDrawnPoints[k].y += this.iPosY-oldY;
 						}
 						
-						this.textShape.setX(xPos);
-						this.textShape.setY(yPos);
+						this.textShape.setX(this.iPosX);
+						this.textShape.setY(this.iPosY);
 						
 //						Debugger.log("Collision Detected 1");
 						break;
@@ -213,143 +236,15 @@ function MWWord(word)
 				}
 			}
 			
+			
 //			Debugger.log("Can be drawn? "+bCanBeDrawn + " "+this.textShape.getX());
+			//add the shape to the layer again
 			layer.add(this.textShape);
 			this.textShape.saveData();
-			//layer.draw();
-			
-			//setTimeout("ShowDelayMessage()",3000);
 		}
 //		Debugger.log("Comparisons: "+comparisons);
 		layer.draw();
 		
-		/*var context = canvas.getContext("2d");
-		
-		context.font = this.sFontWeight + " " + 
-						this.sFontStyle + " " + 
-						this.iCount*10+ "px " +
-						this.sFont;
-		context.fillStyle = this.sFillColor;
-		context.strokeStyle = '#000000';
-		context.textAlign = 'center';
-		
-		
-		var bDown = false;
-		var bUp = false;
-		var bRight = true;
-		var bLeft = false;
-		
-		var OldImageData = context.getImageData(0, 0, 800, 600);
-		var iCount = 0;
-		var iCurrentValue = 1;
-		
-		
-		var bCanBeDrawn = false;
-		while(!bCanBeDrawn)
-		{
-			context.translate(xPos, yPos);
-			context.rotate(this.iTextRotation*Math.PI/180);
-			
-			switch(this.sFillOrStroke)
-			{
-			case "fill":
-//				context.fillText(this.sWord, xPos, yPos);
-				context.fillText(this.sWord, 0, 0);
-				break;
-			case "fill+stroke":
-//				context.fillText(this.sWord, xPos, yPos);
-				context.fillText(this.sWord, 0, 0);
-//				context.strokeText(this.sWord, xPos, yPos);
-				context.strokeText(this.sWord, 0, 0);
-				break;
-			default:
-//				context.fillText(this.sWord, xPos, yPos);
-				context.fillText(this.sWord, 0, 0);
-				break;
-			}
-			
-			context.rotate(-this.iTextRotation*Math.PI/180);
-			context.translate(-xPos, -yPos);
-			
-			var textWidth = context.measureText(this.sWord).width;
-			
-			var imageData = context.getImageData(xPos-textWidth, yPos-textWidth, 2*textWidth, 2*textWidth);
-			var pixels = imageData.data;
-			
-			var bCollides = false;
-			
-//			Debugger.log("Drawing Word: "+ this.sWord);
-			for(var i = 0; i < pixels.length; i+=4)
-			{
-				if(pixels[i+3]/255 > 0.1)
-				{
-//					Debugger.log(pixels[i+3]/255);
-					bCollides = true;
-					break;
-				}
-			}
-			
-			if(bCollides)
-			{
-//				Debugger.log(this.sWord+" cannot be drawn - collides");
-				context.putImageData(OldImageData, 0, 0);
-				if(bRight)
-				{
-					xPos+=20;
-					iCount++;
-					if(iCount == iCurrentValue)
-					{
-						bRight = false;
-						bDown = true;
-						iCount = 0;
-					}
-					
-//					Debugger.log("RIGHT");
-				}
-				else if(bDown)
-				{
-					yPos+=20;
-					iCount++;
-					if(iCount == iCurrentValue)
-					{
-						bDown = false;
-						bLeft = true;
-						iCount = 0;
-						iCurrentValue++;
-					}
-//					Debugger.log("DOWN");
-				}
-				else if(bLeft)
-				{
-					xPos-=20;
-					iCount++;
-					if(iCount == iCurrentValue)
-					{
-						bLeft = false;
-						bUp = true;
-						iCount = 0;
-					}
-//					Debugger.log("LEFT");
-				}
-				else if(bUp)
-				{
-					yPos-=20;
-					iCount++;
-					if(iCount == iCurrentValue)
-					{
-						bUp = false;
-						bRight = true;
-						iCount = 0;
-						iCurrentValue++;
-					}
-//					Debugger.log("UP");
-				}
-			}
-			else
-			{
-				bCanBeDrawn = true;
-			}
-		}*/
 		
 	};	
 }
