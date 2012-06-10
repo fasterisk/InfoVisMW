@@ -14,11 +14,11 @@ function MWWord(word)
 	this.sFontStyle = "normal";
 	this.sFillOrStroke = "fill";
 	this.iTextRotation = 0;
-	this.textShape;
 	this.iPosX;
 	this.iPosY;
 	this.iSpanWidth;
 	this.aDrawnPoints = new Array();
+	this.textShape;
 	
 	this.IncreaseCount = function()
 	{
@@ -56,14 +56,14 @@ function MWWord(word)
 		this.iTextRotation = rotation;
 	};
 	
-	this.UpdateDrawnPointArray = function()
+	this.UpdateDrawnPointArray = function(shape)
 	{
 		this.aDrawnPoints = new Array();
 		for(var y = this.iPosY-this.iSpanWidth; y < this.iPosY+this.iSpanWidth; y++)
 		{
 			for(var x = this.iPosX-this.iSpanWidth; x < this.iPosX+this.iSpanWidth; x++)
 			{
-				if(this.textShape.intersects(x,y))
+				if(shape.intersects(x,y))
 					this.aDrawnPoints.push(new POINT(x,y));
 			}
 		}
@@ -78,7 +78,7 @@ function MWWord(word)
 		this.iPosY = stageHeight / 2;
 		
 		//create textshape
-		this.textShape = new Kinetic.Text({
+		var shape = new Kinetic.Text({
 			x: this.iPosX,
 			y: this.iPosY,
 			text: this.sWord,
@@ -93,22 +93,42 @@ function MWWord(word)
 		});
 		
 		//rotate text according to the rotation
-		this.textShape.setRotationDeg(this.iTextRotation);
-		
-		//create eventlistener for the text-moving
-		this.textShape.on("dragmove", function() {
-			this.textShape.saveData();
-		});
+		shape.setRotationDeg(this.iTextRotation);
 		
 		//add text to the layer (for being able to get parameters as width, height or intersects)
-		layer.add(this.textShape);
-		this.textShape.saveData();
+		layer.add(shape);
+		shape.saveData();
+		
+		//add eventlistener
+		shape.on("dragmove", function() {
+			shape.saveData();
+			
+			layer.remove(shape);
+			var layerChildren = layer.getChildren();
+			for(var i = 0; i < layerChildren.length; i++)
+			{
+				layerChildren[i].setAlpha(0.5);
+			}
+			layer.add(shape);
+			layer.draw();
+		});
+		
+		shape.on("dragend", function() {
+			shape.saveData();
+			
+			var layerChildren = layer.getChildren();
+			for(var i = 0; i < layerChildren.length; i++)
+			{
+				layerChildren[i].setAlpha(1);
+			}
+			layer.draw();
+		});
 		
 		//get the maximum span width of the word
-		this.iSpanWidth = Math.max(this.textShape.getTextWidth(), this.textShape.getTextHeight());
+		this.iSpanWidth = Math.max(shape.getTextWidth(), shape.getTextHeight());
 		
 		//create an array that contains all drawn points of this word
-		this.UpdateDrawnPointArray();
+		this.UpdateDrawnPointArray(shape);
 		
 		//only one of these can be true, it is the direction that the word has to move when a collision occurs
 		var bDown = false;
@@ -131,7 +151,7 @@ function MWWord(word)
 		while(!bCanBeDrawn)
 		{
 			//remove this shape to get only the children of the layer that need to be compared
-			layer.remove(this.textShape);
+			layer.remove(shape);
 			
 			//get other children of this layer
 			var layerChildren = layer.getChildren();
@@ -139,8 +159,8 @@ function MWWord(word)
 			//if current word is the first one, you can draw it directly
 			if(layerChildren.length == 0)
 			{
-				layer.add(this.textShape);
-				this.textShape.saveData();
+				layer.add(shape);
+				shape.saveData();
 				break;
 			}
 			
@@ -163,7 +183,7 @@ function MWWord(word)
 				{
 					comparisons++;
 					//if collision is detected, move the current text by a certain amount
-					if(layerChildren[j].intersects(x,y) && this.textShape.intersects(x,y))
+					if(layerChildren[j].intersects(x,y) && shape.intersects(x,y))
 					{
 						bCollisionDetected = true;
 						bCanBeDrawn = false;
@@ -227,8 +247,8 @@ function MWWord(word)
 							this.aDrawnPoints[k].y += this.iPosY-oldY;
 						}
 						
-						this.textShape.setX(this.iPosX);
-						this.textShape.setY(this.iPosY);
+						shape.setX(this.iPosX);
+						shape.setY(this.iPosY);
 						
 //						Debugger.log("Collision Detected 1");
 						break;
@@ -239,12 +259,14 @@ function MWWord(word)
 			
 //			Debugger.log("Can be drawn? "+bCanBeDrawn + " "+this.textShape.getX());
 			//add the shape to the layer again
-			layer.add(this.textShape);
-			this.textShape.saveData();
+			layer.add(shape);
+			shape.saveData();
 		}
 //		Debugger.log("Comparisons: "+comparisons);
+		
+		this.textShape = shape;
+		
+		//Draw the layer
 		layer.draw();
-		
-		
 	};	
 }
