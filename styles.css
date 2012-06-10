@@ -1,21 +1,12 @@
 <style type="text/css" media="all">
-	body 
-	{
-		font-family: "Verdana";
-		color: black;
-	}
-	
-	h1 
-	{
-		font-size: 4em;
-		color: black;
-		text-align: center;
-	}
-	h2
-	{
-		font-size: 2em;
-		color: black;
-		text-align: center;
-	}
+	<style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+      canvas {
+        border: 1px solid #9C9898;
+      }
+    </style>
 	
 </style>

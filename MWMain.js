@@ -1,5 +1,15 @@
 window.addEventListener('load', eventWindowLoaded, false);
 
+function writeMessage(messageLayer, message) {
+	Debugger.log(message);
+    var context = messageLayer.getContext();
+    messageLayer.clear();
+    context.font = "18pt Calibri";
+    context.fillStyle = "black";
+    context.fillText(message, 10, 25);
+    
+  }
+
 function eventWindowLoaded()
 {
 	window.TextHandler = new MWTextHandler();
@@ -7,7 +17,7 @@ function eventWindowLoaded()
 	window.TextHandler.ReadText(window.CurrentText);
 	MainApp();
 }
-	
+
 function MainApp()
 {
 	if (!canvasSupport())
@@ -15,9 +25,48 @@ function MainApp()
 		return;
 	}
 	
-	//Create Canvas
-	var canvas = document.getElementById("canvas");
-	window.Canvas = new MWCanvas(canvas);
+	window.stage = new Kinetic.Stage({
+		container: "container",
+		width: 800,
+		height: 600
+	});
+
+	
+	/*var hbox = new Kinetic.Text({
+		x: 100,
+		y: 70,
+		fontSize: 18,
+		fontFamily: "Calibri",
+		text: "text1",
+		textFill: "black",
+		padding: 15,
+		draggable: true,
+	});
+	
+	var vbox = new Kinetic.Text({
+		x: stage.getWidth() / 2,
+		y: 70,
+		fontSize: 18,
+		fontFamily: "Calibri",
+		text: "text2",
+		textFill: "black",
+		padding: 15,
+		draggable: true,
+	});
+
+	hbox.on("dragend", function() {
+		hbox.saveData();
+	});
+	
+	vbox.on("dragend", function() {
+		vbox.saveData();
+	});*/
+
+
+//	hbox.saveData();
+//	vbox.saveData();
+	
+	window.Canvas = new MWCanvas(stage);
 	
 	//Add event listener
 	var formElement = document.getElementById("textBox");

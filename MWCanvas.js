@@ -1,6 +1,9 @@
-function MWCanvas(canvas)
+function MWCanvas(stage)
 {
-	this.canvas = canvas;
+	this.stage = stage;
+	this.layer = new Kinetic.Layer();
+	this.stage.add(this.layer);
+	
 	this.sFillOrStroke = "fill";
 	this.sFont = "serif";
 	this.sBackgroundColor = "#ffffff";
@@ -15,9 +18,8 @@ function MWCanvas(canvas)
 	
 	this.Draw = function()
 	{
-		var context = canvas.getContext("2d");
-	
-		context.globalAlpha = 1;
+		
+		/*context.globalAlpha = 1;
 				
 		context.fillStyle = '#ffffff';
 		context.fillRect(0, 0, canvas.width, canvas.height);
@@ -43,7 +45,7 @@ function MWCanvas(canvas)
 		for(var i = 0; i < aWordList.length; i++)
 		{
 			if(aWordList[i].iCount > 1)
-				aWordList[i].Draw(context, xPos, yPos);
+				aWordList[i].Draw(canvas, xPos, yPos);
 		}
 		
 		//set alpha to 255
@@ -56,6 +58,25 @@ function MWCanvas(canvas)
 		}
 		
 		context.putImageData(imageData, 0, 0);
+		*/
+		
+		this.stage.reset();
+		this.layer = new Kinetic.Layer();
+		this.stage.add(this.layer);
+		
+		window.stage = this.stage;
+		
+		var aWordList = window.TextHandler.GetWordList();
+		var aDrawnWords = new Array();
+		
+		for(var i = 0; i < aWordList.length; i++)
+		{
+			if(aWordList[i].iCount > 1)
+			{
+				aWordList[i].Draw(this.layer, stage.getWidth(), stage.getHeight(), aDrawnWords);
+				aDrawnWords.push(aWordList[i]);
+			}
+		}
 	};
 	
 	this.UpdateWordStyles = function() 

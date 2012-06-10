@@ -8,6 +8,7 @@ function MWWord(word)
 	this.sFontStyle = "normal";
 	this.sFillOrStroke = "fill";
 	this.iTextRotation = 0;
+	this.textShape;
 	
 	this.IncreaseCount = function()
 	{
@@ -45,8 +46,103 @@ function MWWord(word)
 		this.iTextRotation = rotation;
 	};
 	
-	this.Draw = function(context, xPos, yPos)
+	this.Draw = function(layer, stageWidth, stageHeight, aDrawnWords)
 	{
+		Debugger.log("DRAWING: "+ this.sWord);
+		
+		var xPos = stageWidth / 2;
+		var yPos = stageHeight / 2;
+		
+		this.textShape = new Kinetic.Text({
+			x: xPos,
+			y: yPos,
+			text: this.sWord,
+			fontSize: this.iCount*10,
+			fontFamily: this.sFont,
+			textFill: this.sFillColor,
+			align: "center",
+			verticalAlign: "middle",
+			fontStyle: this.sFontStyle,
+			fontWeight: this.sFontWeight,
+			draggable: true
+		});
+		
+		this.textShape.setRotationDeg(90);
+		
+		this.textShape.on("dragmove", function() {
+			this.textShape.saveData();
+		});
+		
+		
+		layer.add(this.textShape);
+		this.textShape.saveData();
+		
+		var textWidth = this.textShape.getTextWidth();
+		var textHeight = this.textShape.getTextHeight();
+		var xPos = this.textShape.getX();
+		var yPos = this.textShape.getY();
+		
+		var maxDist = Math.max(textWidth, textHeight);
+		
+		
+		var bCanBeDrawn = false;
+		var bCollisionDetected = false;
+		while(!bCanBeDrawn)
+		{
+			layer.remove(this.textShape);
+			
+			var layerChildren = layer.getChildren();
+			
+			if(layerChildren.length == 0)
+			{
+				layer.add(this.textShape);
+				this.textShape.saveData();
+				break;
+			}
+			
+			bCollisionDetected = false;
+			bCanBeDrawn = true;
+			for(var y = yPos-maxDist; y < yPos+maxDist; y++)
+			{
+				if(bCollisionDetected)
+				{
+//					Debugger.log("Collision Detected 3");
+					break;
+				}
+				for(var x = xPos-maxDist; x < xPos+maxDist; x++)
+				{
+					if(bCollisionDetected)
+					{
+//						Debugger.log("Collision Detected 2");
+						break;
+					}
+					for(var i = 0; i < layerChildren.length; i++)
+					{
+						if(layerChildren[i].intersects(x,y) && this.textShape.intersects(x,y))
+						{
+							bCollisionDetected = true;
+							bCanBeDrawn = false;
+							xPos++;
+							this.textShape.setX(xPos);
+//							Debugger.log("Collision Detected 1");
+							break;
+						}
+					}
+				}
+			}
+			
+			Debugger.log("Can be drawn? "+bCanBeDrawn + " "+this.textShape.getX());
+			layer.add(this.textShape);
+			this.textShape.saveData();
+			//layer.draw();
+			
+			//setTimeout("ShowDelayMessage()",3000);
+		}
+		
+		layer.draw();
+		
+		/*var context = canvas.getContext("2d");
+		
 		context.font = this.sFontWeight + " " + 
 						this.sFontStyle + " " + 
 						this.iCount*10+ "px " +
@@ -171,7 +267,7 @@ function MWWord(word)
 			{
 				bCanBeDrawn = true;
 			}
-		}
+		}*/
 		
 	};	
 }
