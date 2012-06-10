@@ -2,7 +2,17 @@ function MWTextHandler()
 {
 	/* private members */
 	this.aWordList = new Array();
-	
+
+	this.GetWord = function(wordname)
+	{
+		for(var i = 0; i < this.aWordList.length; i++)
+		{
+			if(this.aWordList[i].sWord == wordname)
+			{
+				return this.aWordList[i];
+			}
+		}
+	};
 
 	this.ReadText = function(text)
 	{

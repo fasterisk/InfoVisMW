@@ -103,14 +103,27 @@ function MWWord(word)
 		//add eventlistener
 		shape.on("dragmove", function() {
 			shape.saveData();
-			var aDrawnPoints = GetDrawnPointArray(shape, shape.getX(), shape.getY(), Math.max(shape.getTextWidth(), shape.getTextHeight()));
+
 			layer.remove(shape);
+			
 			var layerChildren = layer.getChildren();
 			for(var i = 0; i < layerChildren.length; i++)
-			{
 				layerChildren[i].setAlpha(0.5);
 				
-			}
+			layer.add(shape);
+			//layer.draw();
+		});
+		
+		shape.on("dragend", function() {
+			shape.saveData();
+			
+			var aDrawnPoints = GetDrawnPointArray(shape, shape.getX(), shape.getY(), Math.max(shape.getTextWidth(), shape.getTextHeight()));
+			
+			layer.remove(shape);
+			
+			var layerChildren = layer.getChildren();
+			for(var i = 0; i < layerChildren.length; i++)
+				layerChildren[i].setAlpha(1);
 			
 			for(var i = 0; i < aDrawnPoints.length; i++)
 			{
@@ -121,32 +134,14 @@ function MWWord(word)
 					if(layerChildren[j].intersects(x,y) && shape.intersects(x,y))
 					{
 						layerChildren[j].transitionTo({
-				            x: 0,
-				            y: 0,
-				            rotation: Math.PI * 2,
-				            alpha: 1,
-				            strokeWidth: 6,
-				            scale: {
-				              x: 1.3,
-				              y: 1.3
-				            },
-				            duration: 1,
-				          });
+							x: 0,
+							y: 0,
+							duration: 1,
+						});
 					}
 				}
 			}
 			layer.add(shape);
-			layer.draw();
-		});
-		
-		shape.on("dragend", function() {
-			shape.saveData();
-			
-			var layerChildren = layer.getChildren();
-			for(var i = 0; i < layerChildren.length; i++)
-			{
-				layerChildren[i].setAlpha(1);
-			}
 			layer.draw();
 		});
 		
