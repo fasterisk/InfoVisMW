@@ -119,37 +119,48 @@ function MWWord(word)
 		var bBeforeSelected = this.bSelected;
 		if(this.bSelected)
 			this.Unselect();
+		
 		//create selection shape
 		var selectionShapeRect = new Kinetic.Rect({
-			x: this.pPos.x - this.textShape.getTextWidth()/2,
-			y: this.pPos.y - this.textShape.getTextHeight()/2,
+			x: this.pPos.x,
+			y: this.pPos.y,
 			width: this.textShape.getTextWidth(),
 			height: this.textShape.getTextHeight(),
 			stroke: "black",
-			strokeWidth: 1
+			strokeWidth: 1,
+			centerOffset: [this.textShape.getTextWidth()/2, this.textShape.getTextHeight()/2] //for rotation
 		});
 		this.selectionShapeRect = selectionShapeRect;
+		
+		Debugger.log(Math.sin(0));
+		Debugger.log(Math.sin(90*Math.PI/180));
+		
 		var selectionShapeLine = new Kinetic.Line({
-			points: [this.pPos.x, this.pPos.y-this.textShape.getTextHeight()/2, this.pPos.x, this.pPos.y-this.textShape.getTextHeight()/2-20],
+			points: [this.pPos.x + this.textShape.getTextHeight()/2*Math.sin(this.iTextRotation*Math.PI/180), this.pPos.y - this.textShape.getTextHeight()/2*Math.cos(this.iTextRotation*Math.PI/180),
+			         this.pPos.x + this.textShape.getTextHeight()/2*Math.sin(this.iTextRotation*Math.PI/180)+20*Math.sin(this.iTextRotation*Math.PI/180), this.pPos.y - this.textShape.getTextHeight()/2*Math.cos(this.iTextRotation*Math.PI/180) - 20*Math.cos(this.iTextRotation*Math.PI/180)],
 			stroke: "black",
 			strokeWidth : 1,
 			lineCap: "round",
-			lineJoin: "round"
+			lineJoin: "round"//,
+			//centerOffset: [0, 0] //for rotation
 		});
+		Debugger.log(selectionShapeLine.getCenterOffset());
 		this.selectionShapeLine = selectionShapeLine;
 		var selectionShapeRotationPoint = new Kinetic.Circle({
 			x: this.pPos.x,
-			y: this.pPos.y - this.textShape.getTextHeight()/2 - 20,
+			y: this.pPos.y,
 			radius: 5,
 			fill: "green",
 			stroke: "black",
-			strokeWidth: 1
+			strokeWidth: 1,
+			centerOffset: [0, this.textShape.getTextHeight()/2+20]
 		});
 		this.selectionShapeRotationPoint = selectionShapeRotationPoint;
 		
 		//rotate the selection shape
 		this.selectionShapeRect.setRotationDeg(this.iTextRotation);
-		this.selectionShapeLine.setRotationDeg(this.iTextRotation);
+		//this.selectionShapeLine.setRotationDeg(this.iTextRotation);
+		this.selectionShapeRotationPoint.setRotationDeg(this.iTextRotation);
 		
 		if(bBeforeSelected)
 			this.Select();
@@ -474,6 +485,7 @@ function MWWord(word)
 		this.pStartBeginning.x = this.pPos.x;
 		this.pStartBeginning.y = this.pPos.y;
 		
+		// update the selection shape - only shown when text is selected
 		this.UpdateSelectionShape();
 		
 		//Draw the layer
