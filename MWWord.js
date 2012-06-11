@@ -70,6 +70,16 @@ function MWWord(word)
 		}
 	};
 	
+	this.UpdatePosition = function()
+	{
+		Debugger.log("UPDATING POSITION of "+this.sWord+"(old: "+this.pPos.x+"|"+this.pPos.y+")");
+		this.textShape.saveData();
+		this.pPos.x = this.textShape.getX();
+		this.pPos.y = this.textShape.getY();
+		Debugger.log("NEW: "+this.pPos.x+"|"+this.pPos.y+")");
+		
+	};
+	
 	this.Draw = function(layer, stageWidth, stageHeight, aDrawnWords)
 	{
 		Debugger.log("DRAWING: "+ this.sWord);
@@ -130,35 +140,6 @@ function MWWord(word)
 			for(var i = 0; i < layerChildren.length; i++)
 				layerChildren[i].setAlpha(0.5);
 			
-			for(var i = 0; i < word.aDrawnPoints.length; i++)
-			{
-				var x = word.aDrawnPoints[i].x+word.pPos.x-word.pStartBeginning.x;
-				var y = word.aDrawnPoints[i].y+word.pPos.y-word.pStartBeginning.y;
-				
-				for(var j = 0; j < layerChildren.length; j++)
-				{
-					if(layerChildren[j].intersects(x,y))
-					{
-						Debugger.log("COLLISION of "+word.sWord +" and "+layerChildren[j].getText());
-						if(layerChildren[j].getFontSize() <= word.textShape.getFontSize())
-						{
-							var currentWord = window.TextHandler.GetWord(layerChildren[j].getText());
-							currentWord.textShape.transitionTo({
-								x: 0,
-								y: 0,
-								duration: 0.2,
-								callback: function() {
-									Debugger.log("END TRANSITION");
-									currentWord.textShape.saveData();
-									currentWord.pPos.x = layerChildren[j].getX();
-									currentWord.pPos.y = layerChildren[j].getY();
-									Debugger.log("new pos of "+currentWord.sWord+": "+currentWord.pPos.x + " "+currentWord.pPos.y);
-								}
-							});
-						}
-					}
-				}
-			}
 			layer.add(word.textShape);
 			layer.draw();
 			
@@ -179,6 +160,7 @@ function MWWord(word)
 				layerChildren[i].setAlpha(1);
 			
 			var bReturnToOriginalPosition = false;
+			var aWordsToMove = new Array();
 			for(var i = 0; i < word.aDrawnPoints.length; i++)
 			{
 				if(!bReturnToOriginalPosition)
@@ -205,10 +187,61 @@ function MWWord(word)
 								bReturnToOriginalPosition = true;
 								break;
 							}
+							else
+							{
+								var bWordAlreadyInWordsToMove = false;
+								for(var k = 0; k < aWordsToMove.length; k++)
+								{
+									if(aWordsToMove[k].sWord == layerChildren[j].getText())
+									{
+										bWordAlreadyInWordsToMove = true;
+										break;
+									}
+								}
+								if(!bWordAlreadyInWordsToMove)
+									aWordsToMove.push(window.TextHandler.GetWord(layerChildren[j].getText()));
+							}
+							
 						}
 					}	
 				}
 			}
+			
+			if(!bReturnToOriginalPosition)
+			{
+				for(var k = 0; k < aWordsToMove.length; k++)
+				{
+					Debugger.log("MOVING "+aWordsToMove[k].sWord);
+					var currentWord = aWordsToMove[k];
+					currentWord.textShape.transitionTo({
+						x: 0,
+						y: 0,
+						duration: 0.2,
+						callback: function() {
+							Debugger.log("END TRANSITION");
+							window.TextHandler.UpdateTextPositions();
+						}
+					});
+				}
+				/*for(var k = 0; k < aWordsToMove.length; k++)
+				{
+					var currentWord = aWordsToMove[k];
+					currentWord.textShape.transitionTo({
+						x: 0,
+						y: 0,
+						duration: 0.2,
+						callback: function() {
+							Debugger.log("END TRANSITION");
+							currentWord.textShape.saveData();
+							currentWord.pPos.x = currentWord.textShape.getX();
+							currentWord.pPos.y = currentWord.textShape.getY();
+							Debugger.log("new pos of "+currentWord.sWord+": "+currentWord.pPos.x + " "+currentWord.pPos.y);
+						}
+					});
+				}
+				*/
+			}
+			
 			document.body.style.cursor = "default";
 			layer.add(word.textShape);
 			layer.draw();

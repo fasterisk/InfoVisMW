@@ -13,6 +13,12 @@ function MWTextHandler()
 			}
 		}
 	};
+	
+	this.UpdateTextPositions = function()
+	{
+		for(var i = 0; i < this.aWordList.length; i++)
+			this.aWordList[i].UpdatePosition();
+	};
 
 	this.ReadText = function(text)
 	{
@@ -37,6 +43,8 @@ function MWTextHandler()
 		{
 			nextPos = enter;
 		}
+		
+		var tempWordList = new Array();
 
 		while (nextPos != -1)
 		{
@@ -47,19 +55,19 @@ function MWTextHandler()
 			if (newWordStr.length > 2 && !wordInKnownList)
 			{
 				// Debugger.log(newWordStr);
-				for ( var i = 0; i < this.aWordList.length; i++)
+				for ( var i = 0; i < tempWordList.length; i++)
 				{
-					if (this.aWordList[i].sWord == newWordStr)
+					if (tempWordList[i].sWord == newWordStr)
 					{
-						Debugger.log("Increasing count of " + this.aWordList[i].sWord);
-						this.aWordList[i].IncreaseCount();
+						Debugger.log("Increasing count of " + tempWordList[i].sWord);
+						tempWordList[i].IncreaseCount();
 						wordInWordlist = true;
 					}
 				}
 				if (!wordInWordlist)
 				{
 					Debugger.log("Adding Word: " + newWordStr + " to Wordlist.");
-					this.aWordList.push(new MWWord(newWordStr));
+					tempWordList.push(new MWWord(newWordStr));
 				}
 			}
 
@@ -78,29 +86,31 @@ function MWTextHandler()
 		{
 			wordInWordlist = false;
 			// Debugger.log(newWordStr);
-			for ( var i = 0; i < this.aWordList.length; i++)
+			for ( var i = 0; i < tempWordList.length; i++)
 			{
-				if (this.aWordList[i].sWord == newWordStr)
+				if (tempWordList[i].sWord == newWordStr)
 				{
-					Debugger.log("Increasing count of " + this.aWordList[i].sWord);
-					this.aWordList[i].IncreaseCount();
+					Debugger.log("Increasing count of " + tempWordList[i].sWord);
+					tempWordList[i].IncreaseCount();
 					wordInWordlist = true;
 				}
 			}
 			if (!wordInWordlist)
 			{
 				Debugger.log("Adding Word: " + newWordStr + " to Wordlist.");
-				this.aWordList.push(new MWWord(newWordStr));
+				tempWordList.push(new MWWord(newWordStr));
 			}
 		}
 		
 		//Sort the wordlist according to the count of the words
-		this.aWordList.sort(WordSort);
+		tempWordList.sort(WordSort);
 
-		// Debugging
-		for ( var i = 0; i < this.aWordList.length; i++)
+
+		for ( var i = 0; i < tempWordList.length; i++)
 		{
-			Debugger.log(this.aWordList[i].sWord + " " + this.aWordList[i].iCount);
+			Debugger.log(tempWordList[i].sWord + " " + tempWordList[i].iCount);
+			if(tempWordList[i].iCount >= 2)
+				this.aWordList.push(tempWordList[i]);
 		}
 	};
 	
