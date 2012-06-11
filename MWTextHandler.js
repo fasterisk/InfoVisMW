@@ -2,6 +2,17 @@ function MWTextHandler()
 {
 	/* private members */
 	this.aWordList = new Array();
+	this.selectedWord = undefined;
+	
+	this.SelectWord = function(selectedword)
+	{
+		this.selectedWord = selectedword;
+	};
+	
+	this.GetSelectedWord = function()
+	{
+		return this.selectedWord;
+	};
 
 	this.GetWord = function(wordname)
 	{

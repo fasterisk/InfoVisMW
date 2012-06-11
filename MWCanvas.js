@@ -1,8 +1,11 @@
 function MWCanvas(stage)
 {
 	this.stage = stage;
-	this.layer = new Kinetic.Layer();
-	this.stage.add(this.layer);
+	this.textlayer = new Kinetic.Layer();
+	this.selectionlayer = new Kinetic.Layer();
+	this.stage.add(this.selectionlayer);
+	this.stage.add(this.textlayer);
+	
 	
 	this.sFillOrStroke = "fill";
 	this.sFont = "serif";
@@ -20,10 +23,17 @@ function MWCanvas(stage)
 	{
 		
 		this.stage.reset();
-		this.layer = new Kinetic.Layer();
-		this.stage.add(this.layer);
+		this.textlayer = new Kinetic.Layer();
+		this.selectionlayer = new Kinetic.Layer();
+		this.stage.add(this.selectionlayer);
+		this.stage.add(this.textlayer);
 		
 		window.stage = this.stage;
+		window.textlayer = this.textlayer;
+		window.selectionlayer = this.selectionlayer;
+		
+		//set selected word to undefined
+		window.TextHandler.SelectWord(undefined);
 		
 		var aWordList = window.TextHandler.GetWordList();
 		var aDrawnWords = new Array();
@@ -32,10 +42,12 @@ function MWCanvas(stage)
 		{
 			if(aWordList[i].iCount > 1)
 			{
-				aWordList[i].Draw(this.layer, stage.getWidth(), stage.getHeight(), aDrawnWords);
+				aWordList[i].Draw(stage.getWidth(), stage.getHeight(), aDrawnWords);
 				aDrawnWords.push(aWordList[i]);
 			}
 		}
+		
+		window.selectionlayer.draw();
 	};
 	
 	this.UpdateWordStyles = function() 

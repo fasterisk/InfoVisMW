@@ -8,18 +8,30 @@ function MWWord(word)
 {
 	this.sWord = word;
 	this.iCount = 1;
+	
+	this.shapeGroup;
+	this.textShape;
+	
 	this.sFont = "serif";
 	this.sFillColor = "ff0000";
 	this.sFontWeight = "bold";
 	this.sFontStyle = "normal";
 	this.sFillOrStroke = "fill";
 	this.iTextRotation = 0;
-	this.pPos = new POINT(0,0);
+	
 	this.iSpanWidth;
 	this.aDrawnPoints = new Array();
-	this.textShape;
+	
+	this.pPos = new POINT(0,0);
 	this.pStartBeginning = new POINT(0,0);
 	this.pStartCurrent = new POINT(0,0);
+	
+	this.bPinned = false;
+	this.bSelected = false;
+	
+	this.selectionShapeRect;
+	this.selectionShapeLine;
+	this.selectionShapeRotationPoint;
 	
 	this.IncreaseCount = function()
 	{
@@ -70,6 +82,28 @@ function MWWord(word)
 		}
 	};
 	
+	this.Unselect = function()
+	{
+		if(this.bSelected)
+		{
+			window.selectionlayer.remove(this.selectionShapeRect);
+			window.selectionlayer.remove(this.selectionShapeLine);
+			window.selectionlayer.remove(this.selectionShapeRotationPoint);
+		}
+		this.bSelected = false;
+	};
+	
+	this.Select = function()
+	{
+		if(!this.bSelected)
+		{
+			window.selectionlayer.add(this.selectionShapeRect);
+			window.selectionlayer.add(this.selectionShapeLine);
+			window.selectionlayer.add(this.selectionShapeRotationPoint);
+		}
+		this.bSelected = true;
+	};
+	
 	this.UpdatePosition = function()
 	{
 		Debugger.log("UPDATING POSITION of "+this.sWord+"(old: "+this.pPos.x+"|"+this.pPos.y+")");
@@ -80,15 +114,56 @@ function MWWord(word)
 		
 	};
 	
-	this.Draw = function(layer, stageWidth, stageHeight, aDrawnWords)
+	this.UpdateSelectionShape = function()
+	{
+		var bBeforeSelected = this.bSelected;
+		if(this.bSelected)
+			this.Unselect();
+		//create selection shape
+		var selectionShapeRect = new Kinetic.Rect({
+			x: this.pPos.x - this.textShape.getTextWidth()/2,
+			y: this.pPos.y - this.textShape.getTextHeight()/2,
+			width: this.textShape.getTextWidth(),
+			height: this.textShape.getTextHeight(),
+			stroke: "black",
+			strokeWidth: 1
+		});
+		this.selectionShapeRect = selectionShapeRect;
+		var selectionShapeLine = new Kinetic.Line({
+			points: [this.pPos.x, this.pPos.y-this.textShape.getTextHeight()/2, this.pPos.x, this.pPos.y-this.textShape.getTextHeight()/2-20],
+			stroke: "black",
+			strokeWidth : 1,
+			lineCap: "round",
+			lineJoin: "round"
+		});
+		this.selectionShapeLine = selectionShapeLine;
+		var selectionShapeRotationPoint = new Kinetic.Circle({
+			x: this.pPos.x,
+			y: this.pPos.y - this.textShape.getTextHeight()/2 - 20,
+			radius: 5,
+			fill: "green",
+			stroke: "black",
+			strokeWidth: 1
+		});
+		this.selectionShapeRotationPoint = selectionShapeRotationPoint;
+		
+		//rotate the selection shape
+		this.selectionShapeRect.setRotationDeg(this.iTextRotation);
+		this.selectionShapeLine.setRotationDeg(this.iTextRotation);
+		
+		if(bBeforeSelected)
+			this.Select();
+		
+		window.selectionlayer.draw();
+	};
+	
+	this.Draw = function(stageWidth, stageHeight, aDrawnWords)
 	{
 		Debugger.log("DRAWING: "+ this.sWord);
 		
 		//Initial drawing position
 		this.pPos.x = stageWidth / 2;
 		this.pPos.y = stageHeight / 2;
-		
-		
 		
 		//create textshape
 		this.textShape = new Kinetic.Text({
@@ -109,8 +184,10 @@ function MWWord(word)
 		this.textShape.setRotationDeg(this.iTextRotation);
 		
 		//add text to the layer (for being able to get parameters as width, height or intersects)
-		layer.add(this.textShape);
+		window.textlayer.add(this.textShape);
 		this.textShape.saveData();
+		
+		
 		
 		//get the maximum span width of the word
 		this.iSpanWidth = Math.max(this.textShape.getTextWidth(), this.textShape.getTextHeight());
@@ -128,37 +205,40 @@ function MWWord(word)
 			document.body.style.cursor = "pointer";
 			
 			var word = window.TextHandler.GetWord(thisword);
-			word.textShape.saveData();
 			
+			var pOldPos = new POINT(word.pPos.x, word.pPos.y);
 			//update position
-			word.pPos.x = word.textShape.getX();
-			word.pPos.y = word.textShape.getY();
-
-			layer.remove(word.textShape);
+			word.UpdatePosition();
+			word.UpdateSelectionShape(pOldPos);
 			
-			var layerChildren = layer.getChildren();
+			//set alpha of all other words to 0.5
+			window.textlayer.remove(word.textShape);
+			
+			var layerChildren = window.textlayer.getChildren();
 			for(var i = 0; i < layerChildren.length; i++)
 				layerChildren[i].setAlpha(0.5);
 			
-			layer.add(word.textShape);
-			layer.draw();
+			window.textlayer.add(word.textShape);
+			window.textlayer.draw();
 			
 		});
 		
 		this.textShape.on("dragend", function() {
 			
 			var word = window.TextHandler.GetWord(thisword);
-			word.textShape.saveData();
-			word.pPos.x = word.textShape.getX();
-			word.pPos.y = word.textShape.getY();
+			word.UpdatePosition();
 			
+			window.textlayer.remove(word.textShape);
 			
-			layer.remove(word.textShape);
-			
-			var layerChildren = layer.getChildren();
+			//set alpha of all other words to 1 again
+			var layerChildren = window.textlayer.getChildren();
 			for(var i = 0; i < layerChildren.length; i++)
 				layerChildren[i].setAlpha(1);
 			
+			/*
+			 * collision detection - when a bigger word is under the current drop position, current word is moved back again
+			 *  - when no bigger word is under the current drop position, all smaller words have to move, current word is dropped
+			 */
 			var bReturnToOriginalPosition = false;
 			var aWordsToMove = new Array();
 			for(var i = 0; i < word.aDrawnPoints.length; i++)
@@ -174,6 +254,7 @@ function MWWord(word)
 						{
 							if(layerChildren[j].getFontSize() > word.textShape.getFontSize())
 							{
+								//move current word back, no other word is moved
 								word.textShape.transitionTo({
 									x: word.pStartCurrent.x,
 									y: word.pStartCurrent.y,
@@ -182,13 +263,18 @@ function MWWord(word)
 										word.pPos.x = word.pStartCurrent.x;
 										word.pPos.y = word.pStartCurrent.y;
 										word.textShape.saveData();
+										word.Select();
+										word.UpdateSelectionShape();
 									}
 								});
+								word.Unselect();
+								window.selectionlayer.draw();
 								bReturnToOriginalPosition = true;
 								break;
 							}
 							else
 							{
+								//add smaller word to the ones that have to move - moving is done later
 								var bWordAlreadyInWordsToMove = false;
 								for(var k = 0; k < aWordsToMove.length; k++)
 								{
@@ -207,6 +293,7 @@ function MWWord(word)
 				}
 			}
 			
+			//move all smaller words
 			if(!bReturnToOriginalPosition)
 			{
 				for(var k = 0; k < aWordsToMove.length; k++)
@@ -223,28 +310,11 @@ function MWWord(word)
 						}
 					});
 				}
-				/*for(var k = 0; k < aWordsToMove.length; k++)
-				{
-					var currentWord = aWordsToMove[k];
-					currentWord.textShape.transitionTo({
-						x: 0,
-						y: 0,
-						duration: 0.2,
-						callback: function() {
-							Debugger.log("END TRANSITION");
-							currentWord.textShape.saveData();
-							currentWord.pPos.x = currentWord.textShape.getX();
-							currentWord.pPos.y = currentWord.textShape.getY();
-							Debugger.log("new pos of "+currentWord.sWord+": "+currentWord.pPos.x + " "+currentWord.pPos.y);
-						}
-					});
-				}
-				*/
 			}
 			
 			document.body.style.cursor = "default";
-			layer.add(word.textShape);
-			layer.draw();
+			window.textlayer.add(word.textShape);
+			window.textlayer.draw();
 		});
 		
 		this.textShape.on("mouseover", function() {
@@ -252,6 +322,18 @@ function MWWord(word)
 		});
 		this.textShape.on("mouseout", function() {
 			document.body.style.cursor = "default";
+		});
+		this.textShape.on("mousedown", function() {
+			var currentWord = window.TextHandler.GetWord(thisword);
+			var selectedWord = window.TextHandler.GetSelectedWord();
+			
+			if(selectedWord != undefined)
+				selectedWord.Unselect();
+
+			window.TextHandler.SelectWord(currentWord);
+			currentWord.Select();
+			
+			window.selectionlayer.draw();
 		});
 		
 		//create an array that contains all drawn points of this word
@@ -278,15 +360,15 @@ function MWWord(word)
 		while(!bCanBeDrawn)
 		{
 			//remove this shape to get only the children of the layer that need to be compared
-			layer.remove(this.textShape);
+			window.textlayer.remove(this.textShape);
 			
 			//get other children of this layer
-			var layerChildren = layer.getChildren();
+			var layerChildren = window.textlayer.getChildren();
 			
 			//if current word is the first one, you can draw it directly
 			if(layerChildren.length == 0)
 			{
-				layer.add(this.textShape);
+				window.textlayer.add(this.textShape);
 				this.textShape.saveData();
 				break;
 			}
@@ -384,7 +466,7 @@ function MWWord(word)
 					
 //			Debugger.log("Can be drawn? "+bCanBeDrawn + " "+this.textShape.getX());
 			//add the shape to the layer again
-			layer.add(this.textShape);
+			window.textlayer.add(this.textShape);
 			this.textShape.saveData();
 		}
 		Debugger.log("Comparisons: "+comparisons);
@@ -392,7 +474,9 @@ function MWWord(word)
 		this.pStartBeginning.x = this.pPos.x;
 		this.pStartBeginning.y = this.pPos.y;
 		
+		this.UpdateSelectionShape();
+		
 		//Draw the layer
-		layer.draw();
+		window.textlayer.draw();
 	};	
 }
