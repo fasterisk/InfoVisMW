@@ -117,17 +117,50 @@ function MWWord(word)
 		this.textShape.on("dragmove", function() {
 			document.body.style.cursor = "pointer";
 			
-			var word = window.TextHandler.GetWord(thisword); 
+			var word = window.TextHandler.GetWord(thisword);
 			word.textShape.saveData();
+			
+			//update position
+			word.pPos.x = word.textShape.getX();
+			word.pPos.y = word.textShape.getY();
 
 			layer.remove(word.textShape);
 			
 			var layerChildren = layer.getChildren();
 			for(var i = 0; i < layerChildren.length; i++)
 				layerChildren[i].setAlpha(0.5);
+			
+			for(var i = 0; i < word.aDrawnPoints.length; i++)
+			{
+				var x = word.aDrawnPoints[i].x+word.pPos.x-word.pStartBeginning.x;
+				var y = word.aDrawnPoints[i].y+word.pPos.y-word.pStartBeginning.y;
 				
+				for(var j = 0; j < layerChildren.length; j++)
+				{
+					if(layerChildren[j].intersects(x,y))
+					{
+						Debugger.log("COLLISION of "+word.sWord +" and "+layerChildren[j].getText());
+						if(layerChildren[j].getFontSize() <= word.textShape.getFontSize())
+						{
+							var currentWord = window.TextHandler.GetWord(layerChildren[j].getText());
+							currentWord.textShape.transitionTo({
+								x: 0,
+								y: 0,
+								duration: 0.2,
+								callback: function() {
+									Debugger.log("END TRANSITION");
+									currentWord.textShape.saveData();
+									currentWord.pPos.x = layerChildren[j].getX();
+									currentWord.pPos.y = layerChildren[j].getY();
+									Debugger.log("new pos of "+currentWord.sWord+": "+currentWord.pPos.x + " "+currentWord.pPos.y);
+								}
+							});
+						}
+					}
+				}
+			}
 			layer.add(word.textShape);
-			//layer.draw();
+			layer.draw();
 			
 		});
 		
