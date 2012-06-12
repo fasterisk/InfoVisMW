@@ -13,7 +13,7 @@ function writeMessage(messageLayer, message) {
 function eventWindowLoaded()
 {
 	window.TextHandler = new MWTextHandler();
-	window.CurrentText = "maniwordle maniwordle maniwordle maniwordle maniwordle";
+	window.CurrentText = "maniwordle maniwordle maniwordle maniwordle maniwordle wordle wordle wordle";
 	window.TextHandler.ReadText(window.CurrentText);
 	MainApp();
 }

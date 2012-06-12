@@ -62,6 +62,7 @@ function DragEndFunction(event)
 				{
 					if(layerChildren[j].getFontSize() > word.textShape.getFontSize())
 					{
+						Debugger.log("COLLISION");
 						//move current word back, no other word is moved
 						word.textShape.transitionTo({
 							x: word.pStartCurrent.x,
@@ -337,10 +338,28 @@ function MWWord(word)
 				angle = -angle;
 
 			word.ChangeRotation(word.iTextRotation+angle*180/Math.PI);
-			word.UpdateSelectionShape();
 			word.UpdatePosition(word.textShape);
+			word.UpdateSelectionShape();
+			
+			//set alpha of all other words to 0.5
+			window.textlayer.remove(word.textShape);
+			
+			var layerChildren = window.textlayer.getChildren();
+			for(var i = 0; i < layerChildren.length; i++)
+				layerChildren[i].setAlpha(0.5);
+			
+			window.textlayer.add(word.textShape);
+			window.textlayer.draw();
 			
 			word.selectionShapeRotationPoint.saveData();
+		});
+		
+		this.selectionShapeRotationPoint.on("dragend", function(event){
+			var word = window.TextHandler.GetWord(event.shape.getName());
+			word.pStartBeginning.x = word.pPos.x;
+			word.pStartBeginning.y = word.pPos.y;
+			word.CreateDrawnPointArray();
+			DragEndFunction(event);
 		});
 		this.selectionShapeRotationPoint.on("mouseover", function(event) {
 			document.body.style.cursor = "pointer";
@@ -560,6 +579,8 @@ function MWWord(word)
 		
 		this.pStartBeginning.x = this.pPos.x;
 		this.pStartBeginning.y = this.pPos.y;
+		this.pStartCurrent.x = this.pPos.x;
+		this.pStartCurrent.y = this.pPos.y;
 		
 		// update the selection shape - only shown when text is selected
 		this.UpdateSelectionShape(this);
