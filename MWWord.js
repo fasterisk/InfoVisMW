@@ -5,9 +5,10 @@ function POINT(x,y){
 
 function DragStartFunction(event)
 {
-	var word = window.TextHandler.GetWord(event.shape.getName()); 
-	word.pStartCurrent.x = word.pPos.x;
-	word.pStartCurrent.y = word.pPos.y;
+	var word = window.TextHandler.GetWord(event.shape.getName());
+	word.iOriginalRotation = word.iTextRotation;
+	word.pStart.x = word.pPos.x;
+	word.pStart.y = word.pPos.y;
 }
 
 function DragMoveFunction(event)
@@ -19,6 +20,9 @@ function DragMoveFunction(event)
 	//update position
 	word.UpdatePosition(event.shape);
 	word.UpdateSelectionShape();
+	
+	word.pDrawnPointsOffset.x = word.pPos.x - word.pDrawnPointsPosition.x;
+	word.pDrawnPointsOffset.y = word.pPos.y - word.pDrawnPointsPosition.y;
 	
 	//set alpha of all other words to 0.5
 	window.textlayer.remove(word.textShape);
@@ -53,28 +57,35 @@ function DragEndFunction(event)
 	{
 		if(!bReturnToOriginalPosition)
 		{
-			var x = word.aDrawnPoints[i].x+word.pPos.x-word.pStartBeginning.x;
-			var y = word.aDrawnPoints[i].y+word.pPos.y-word.pStartBeginning.y;
+			var x = word.aDrawnPoints[i].x+word.pDrawnPointsOffset.x;
+			var y = word.aDrawnPoints[i].y+word.pDrawnPointsOffset.y;
+			
+			if(!word.textShape.intersects(x,y))
+				Debugger.log("ERRORRRRRRRRRRR");
 
 			for(var j = 0; j < layerChildren.length; j++)
 			{
 				if(layerChildren[j].intersects(x,y))
 				{
+					Debugger.log("COLLISION with + " +layerChildren[j].getName());
 					if(layerChildren[j].getFontSize() > word.textShape.getFontSize())
 					{
-						Debugger.log("COLLISION");
+						
 						//move current word back, no other word is moved
 						word.textShape.transitionTo({
-							x: word.pStartCurrent.x,
-							y: word.pStartCurrent.y,
+							x: word.pStart.x,
+							y: word.pStart.y,
 							duration: 0.2,
 							callback: function() {
-								word.pPos.x = word.pStartCurrent.x;
-								word.pPos.y = word.pStartCurrent.y;
-								//word.textShape.saveData();
+								word.pPos.x = word.pStart.x;
+								word.pPos.y = word.pStart.y;
+								word.pDrawnPointsOffset.x = word.pPos.x - word.pDrawnPointsPosition.x;
+								word.pDrawnPointsOffset.y = word.pPos.y - word.pDrawnPointsPosition.y;
+								word.textShape.saveData();
 								word.UpdatePosition(word.textShape);
 								word.Select();
 								word.UpdateSelectionShape();
+								word.CreateDrawnPointArray();
 							}
 						});
 						word.ChangeRotation(word.iOriginalRotation);
@@ -148,8 +159,9 @@ function MWWord(word)
 	this.aDrawnPoints = new Array();
 	
 	this.pPos = new POINT(0,0);
-	this.pStartBeginning = new POINT(0,0);
-	this.pStartCurrent = new POINT(0,0);
+	this.pStart = new POINT(0,0);
+	this.pDrawnPointsOffset = new POINT(0,0);
+	this.pDrawnPointsPosition = new POINT(0,0);
 	
 	this.bPinned = false;
 	this.bSelected = false;
@@ -177,7 +189,6 @@ function MWWord(word)
 	
 	this.ChangeFillColor = function(fillcolor)
 	{
-		//Debugger.log(fillcolor);
 		this.sFillColor = fillcolor;
 	};
 	
@@ -198,15 +209,20 @@ function MWWord(word)
 	
 	this.CreateDrawnPointArray = function()
 	{
+		Debugger.log("CALLING: CreateDrawnPointArray with pPos: ("+this.pPos.x + ","+this.pPos.y + ")");
 		this.aDrawnPoints = new Array();
-		for(var y = this.pPos.y-this.iSpanWidth; y < this.pPos.y+this.iSpanWidth; y++)
+		for(var y = this.pPos.y-this.iSpanWidth; y < this.pPos.y+this.iSpanWidth; y+=2)
 		{
-			for(var x = this.pPos.x-this.iSpanWidth; x < this.pPos.x+this.iSpanWidth; x++)
+			for(var x = this.pPos.x-this.iSpanWidth; x < this.pPos.x+this.iSpanWidth; x+=2)
 			{
 				if(this.textShape.intersects(x,y))
 					this.aDrawnPoints.push(new POINT(x,y));
 			}
 		}
+		
+		Debugger.log("DRAWNPOINTS: length: "+this.aDrawnPoints.length);
+		this.pDrawnPointsPosition = new POINT(this.pPos.x, this.pPos.y);
+		this.pDrawnPointsOffset = new POINT(0,0);
 	};
 	
 	this.Unselect = function()
@@ -233,7 +249,6 @@ function MWWord(word)
 	
 	this.UpdatePosition = function(shape)
 	{
-//		Debugger.log("UPDATING POSITION of "+this.sWord+"(old: "+this.pPos.x+"|"+this.pPos.y+")");
 		shape.saveData();
 		this.pPos.x = shape.getX();
 		this.pPos.y = shape.getY();
@@ -242,9 +257,6 @@ function MWWord(word)
 		this.textShape.setRotationDeg(this.iTextRotation);
 		this.textShape.saveData();
 		window.textlayer.draw();
-		// UPDATE TEXTSHAPE POSITION
-//		Debugger.log("NEW: ("+this.pPos.x+"|"+this.pPos.y+")");
-		
 	};
 	
 	this.UpdateSelectionShape = function()
@@ -267,17 +279,15 @@ function MWWord(word)
 		});
 		this.selectionShapeRect = selectionShapeRect;
 		this.selectionShapeRect.on("dragstart", function(event) {
-//			Debugger.log("DRAGSTART of SELECTION");
 			DragStartFunction(event);
 		});
 		this.selectionShapeRect.on("dragmove", function(event) {
-//			Debugger.log("DRAGMOVE of SELECTION");
 			DragMoveFunction(event);
 		});
 		this.selectionShapeRect.on("dragend", function(event) {
 			DragEndFunction(event);
 		});
-		this.selectionShapeRect.on("mouseover", function() {
+		this.selectionShapeRect.on("mouseover", function(event) {
 			document.body.style.cursor = "pointer";
 		});
 		this.selectionShapeRect.on("mouseout", function() {
@@ -292,36 +302,27 @@ function MWWord(word)
 			strokeWidth : 1,
 			lineCap: "round",
 			lineJoin: "round"//,
-			//centerOffset: [0, 0] //for rotation
 		});
 
 		this.selectionShapeLine = selectionShapeLine;
 		var selectionShapeRotationPoint = new Kinetic.Circle({
 			name: this.sWord,
-			//x: this.pPos.x,
-			//y: this.pPos.y,
 			x: this.pPos.x + this.textShape.getTextHeight()/2*Math.sin(this.iTextRotation*Math.PI/180)+20*Math.sin(this.iTextRotation*Math.PI/180),
 			y: this.pPos.y - this.textShape.getTextHeight()/2*Math.cos(this.iTextRotation*Math.PI/180) - 20*Math.cos(this.iTextRotation*Math.PI/180),
 			radius: 5,
 			fill: "green",
 			stroke: "black",
 			strokeWidth: 1,
-			//centerOffset: [0, this.textShape.getTextHeight()/2+20],
 			draggable: true
 		});
 		this.selectionShapeRotationPoint = selectionShapeRotationPoint;
 		
 		//rotate the selection shape
 		this.selectionShapeRect.setRotationDeg(this.iTextRotation);
-		//this.selectionShapeRotationPoint.setRotationDeg(this.iTextRotation);
 		
 		//add event handler for the rotation point
-		
 		this.selectionShapeRotationPoint.on("dragstart", function(event) {
-			var word = window.TextHandler.GetWord(event.shape.getName());
-			word.selectionShapeRotationPointStart.x = word.textShape.getTextHeight()/2*Math.sin(word.iTextRotation*Math.PI/180)+20*Math.sin(word.iTextRotation*Math.PI/180);
-			word.selectionShapeRotationPointStart.y = -word.textShape.getTextHeight()/2*Math.cos(word.iTextRotation*Math.PI/180) - 20*Math.cos(word.iTextRotation*Math.PI/180);
-			word.iOriginalRotation = word.iTextRotation;
+			DragStartFunction(event);
 			
 		});
 		this.selectionShapeRotationPoint.on("dragmove", function(event) {
@@ -360,8 +361,7 @@ function MWWord(word)
 		
 		this.selectionShapeRotationPoint.on("dragend", function(event){
 			var word = window.TextHandler.GetWord(event.shape.getName());
-			word.pStartBeginning.x = word.pPos.x;
-			word.pStartBeginning.y = word.pPos.y;
+			
 			word.CreateDrawnPointArray();
 			DragEndFunction(event);
 		});
@@ -581,10 +581,10 @@ function MWWord(word)
 		}
 		Debugger.log("Comparisons: "+comparisons);
 		
-		this.pStartBeginning.x = this.pPos.x;
-		this.pStartBeginning.y = this.pPos.y;
-		this.pStartCurrent.x = this.pPos.x;
-		this.pStartCurrent.y = this.pPos.y;
+		this.pStart.x = this.pPos.x;
+		this.pStart.y = this.pPos.y;
+		
+		this.CreateDrawnPointArray();
 		
 		// update the selection shape - only shown when text is selected
 		this.UpdateSelectionShape(this);
