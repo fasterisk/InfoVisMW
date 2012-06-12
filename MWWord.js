@@ -61,13 +61,13 @@ function DragEndFunction(event)
 			var y = word.aDrawnPoints[i].y+word.pDrawnPointsOffset.y;
 			
 			if(!word.textShape.intersects(x,y))
-				Debugger.log("ERRORRRRRRRRRRR");
+				Debugger.log("ERROR: Drawnpoint does not intersect word!");
 
 			for(var j = 0; j < layerChildren.length; j++)
 			{
 				if(layerChildren[j].intersects(x,y))
 				{
-					Debugger.log("COLLISION with + " +layerChildren[j].getName());
+					Debugger.log("COLLISION of "+word.sWord+"with + " +layerChildren[j].getName());
 					if(layerChildren[j].getFontSize() > word.textShape.getFontSize())
 					{
 						
@@ -144,7 +144,6 @@ function MWWord(word)
 	this.sWord = word;
 	this.iCount = 1;
 	
-	this.shapeGroup;
 	this.textShape;
 	
 	this.sFont = "serif";
@@ -220,7 +219,7 @@ function MWWord(word)
 			}
 		}
 		
-		Debugger.log("DRAWNPOINTS: length: "+this.aDrawnPoints.length);
+//		Debugger.log("DRAWNPOINTS: length: "+this.aDrawnPoints.length);
 		this.pDrawnPointsPosition = new POINT(this.pPos.x, this.pPos.y);
 		this.pDrawnPointsOffset = new POINT(0,0);
 	};
@@ -301,7 +300,7 @@ function MWWord(word)
 			stroke: "black",
 			strokeWidth : 1,
 			lineCap: "round",
-			lineJoin: "round"//,
+			lineJoin: "round"
 		});
 
 		this.selectionShapeLine = selectionShapeLine;
@@ -335,8 +334,10 @@ function MWWord(word)
 			
 			//calculate the new rotation angle
 			var cosAngle = (vec1X * vec2X + vec1Y * vec2Y) / (Math.sqrt(vec1X*vec1X + vec1Y*vec1Y)*(Math.sqrt(vec2X*vec2X + vec2Y*vec2Y)));
+			
 			if(cosAngle > 1)
 				 cosAngle = 1;
+			
 			var angle = Math.acos(cosAngle);
 			
 			if((vec1X*vec2Y - vec1Y*vec2X)<0)
@@ -574,7 +575,6 @@ function MWWord(word)
 				}
 			}
 					
-//			Debugger.log("Can be drawn? "+bCanBeDrawn + " "+this.textShape.getX());
 			//add the shape to the layer again
 			window.textlayer.add(this.textShape);
 			this.textShape.saveData();
@@ -586,8 +586,10 @@ function MWWord(word)
 		
 		this.CreateDrawnPointArray();
 		
+		this.iOriginalRotation = this.iTextRotation;
+		
 		// update the selection shape - only shown when text is selected
-		this.UpdateSelectionShape(this);
+		this.UpdateSelectionShape();
 		
 		//Draw the layer
 		window.textlayer.draw();

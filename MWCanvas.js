@@ -36,9 +36,10 @@ function MWCanvas(stage)
 		//set selected word to undefined
 		window.TextHandler.SelectWord(undefined);
 		
-		var aWordList = window.TextHandler.GetWordList();
-		var aDrawnWords = new Array();
+		this.UpdateWordStyles();
 		
+		var aDrawnWords = new Array();
+		var aWordList = window.TextHandler.GetWordList();
 		for(var i = 0; i < aWordList.length; i++)
 		{
 			if(aWordList[i].iCount > 1)
@@ -133,6 +134,6 @@ function MWCanvas(stage)
 	
 	this.SetTextRotation = function(rotation)
 	{
-		this.iTextRotation = rotation;
+		this.iTextRotation = parseInt(rotation);
 	};
 }
