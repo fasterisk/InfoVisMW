@@ -71,11 +71,13 @@ function DragEndFunction(event)
 							callback: function() {
 								word.pPos.x = word.pStartCurrent.x;
 								word.pPos.y = word.pStartCurrent.y;
-								word.textShape.saveData();
+								//word.textShape.saveData();
+								word.UpdatePosition(word.textShape);
 								word.Select();
 								word.UpdateSelectionShape();
 							}
 						});
+						word.ChangeRotation(word.iOriginalRotation);
 						word.Unselect();
 						window.selectionlayer.draw();
 						bReturnToOriginalPosition = true;
@@ -140,6 +142,7 @@ function MWWord(word)
 	this.sFontStyle = "normal";
 	this.sFillOrStroke = "fill";
 	this.iTextRotation = 0;
+	this.iOriginalRotation = 0;
 	
 	this.iSpanWidth;
 	this.aDrawnPoints = new Array();
@@ -318,6 +321,7 @@ function MWWord(word)
 			var word = window.TextHandler.GetWord(event.shape.getName());
 			word.selectionShapeRotationPointStart.x = word.textShape.getTextHeight()/2*Math.sin(word.iTextRotation*Math.PI/180)+20*Math.sin(word.iTextRotation*Math.PI/180);
 			word.selectionShapeRotationPointStart.y = -word.textShape.getTextHeight()/2*Math.cos(word.iTextRotation*Math.PI/180) - 20*Math.cos(word.iTextRotation*Math.PI/180);
+			word.iOriginalRotation = word.iTextRotation;
 			
 		});
 		this.selectionShapeRotationPoint.on("dragmove", function(event) {
