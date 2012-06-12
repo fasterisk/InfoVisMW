@@ -154,6 +154,8 @@ function MWWord(word)
 	this.selectionShapeLine;
 	this.selectionShapeRotationPoint;
 	
+	this.selectionShapeRotationPointStart = new POINT(0,0);
+	
 	this.IncreaseCount = function()
 	{
 		this.iCount++;
@@ -233,7 +235,9 @@ function MWWord(word)
 		this.pPos.y = shape.getY();
 		this.textShape.setX(this.pPos.x);
 		this.textShape.setY(this.pPos.y);
+		this.textShape.setRotationDeg(this.iTextRotation);
 		this.textShape.saveData();
+		window.textlayer.draw();
 		// UPDATE TEXTSHAPE POSITION
 //		Debugger.log("NEW: ("+this.pPos.x+"|"+this.pPos.y+")");
 		
@@ -259,11 +263,11 @@ function MWWord(word)
 		});
 		this.selectionShapeRect = selectionShapeRect;
 		this.selectionShapeRect.on("dragstart", function(event) {
-			Debugger.log("DRAGSTART of SELECTION");
+//			Debugger.log("DRAGSTART of SELECTION");
 			DragStartFunction(event);
 		});
 		this.selectionShapeRect.on("dragmove", function(event) {
-			Debugger.log("DRAGMOVE of SELECTION");
+//			Debugger.log("DRAGMOVE of SELECTION");
 			DragMoveFunction(event);
 		});
 		this.selectionShapeRect.on("dragend", function(event) {
@@ -290,19 +294,70 @@ function MWWord(word)
 		this.selectionShapeLine = selectionShapeLine;
 		var selectionShapeRotationPoint = new Kinetic.Circle({
 			name: this.sWord,
-			x: this.pPos.x,
-			y: this.pPos.y,
+			//x: this.pPos.x,
+			//y: this.pPos.y,
+			x: this.pPos.x + this.textShape.getTextHeight()/2*Math.sin(this.iTextRotation*Math.PI/180)+20*Math.sin(this.iTextRotation*Math.PI/180),
+			y: this.pPos.y - this.textShape.getTextHeight()/2*Math.cos(this.iTextRotation*Math.PI/180) - 20*Math.cos(this.iTextRotation*Math.PI/180),
 			radius: 5,
 			fill: "green",
 			stroke: "black",
 			strokeWidth: 1,
-			centerOffset: [0, this.textShape.getTextHeight()/2+20]
+			//centerOffset: [0, this.textShape.getTextHeight()/2+20],
+			draggable: true
 		});
 		this.selectionShapeRotationPoint = selectionShapeRotationPoint;
 		
 		//rotate the selection shape
 		this.selectionShapeRect.setRotationDeg(this.iTextRotation);
-		this.selectionShapeRotationPoint.setRotationDeg(this.iTextRotation);
+		//this.selectionShapeRotationPoint.setRotationDeg(this.iTextRotation);
+		
+		//add event handler for the rotation point
+		
+		this.selectionShapeRotationPoint.on("dragstart", function(event) {
+			Debugger.log("DRAGSTART");
+			var word = window.TextHandler.GetWord(event.shape.getName());
+			word.selectionShapeRotationPointStart.x = word.textShape.getTextHeight()/2*Math.sin(word.iTextRotation*Math.PI/180)+20*Math.sin(word.iTextRotation*Math.PI/180);
+			word.selectionShapeRotationPointStart.y = -word.textShape.getTextHeight()/2*Math.cos(word.iTextRotation*Math.PI/180) - 20*Math.cos(word.iTextRotation*Math.PI/180);
+			
+		});
+		this.selectionShapeRotationPoint.on("dragmove", function(event) {
+//			Debugger.log("DRAGMOVE of ROTATIONPOINT");
+			var word = window.TextHandler.GetWord(event.shape.getName());
+			
+			var vec1X = word.textShape.getTextHeight()/2*Math.sin(word.iTextRotation*Math.PI/180)+20*Math.sin(word.iTextRotation*Math.PI/180);
+			var vec1Y = -word.textShape.getTextHeight()/2*Math.cos(word.iTextRotation*Math.PI/180) - 20*Math.cos(word.iTextRotation*Math.PI/180);
+			var vec2X = event.shape.getX() - word.pPos.x;
+			var vec2Y = event.shape.getY() - word.pPos.y;
+			Debugger.log(vec1X + " "+vec1Y);
+			Debugger.log(vec2X + " "+vec2Y);
+			
+			//calculate the new rotation angle
+			var cosAngle = (vec1X * vec2X + vec1Y * vec2Y) / (Math.sqrt(vec1X*vec1X + vec1Y*vec1Y)*(Math.sqrt(vec2X*vec2X + vec2Y*vec2Y)));
+			if(cosAngle > 1)
+				 cosAngle = 1;
+			var angle = Math.acos(cosAngle);
+
+			
+			
+			word.ChangeRotation(word.iTextRotation+angle*180/Math.PI);
+			word.UpdateSelectionShape();
+			word.UpdatePosition(word.textShape);
+			
+			word.selectionShapeRotationPoint.saveData();
+		});
+		this.selectionShapeRotationPoint.on("mouseover", function(event) {
+			document.body.style.cursor = "pointer";
+			//DEBUG
+			var word = window.TextHandler.GetWord(event.shape.getName());
+			var vec1X = word.textShape.getTextHeight()/2*Math.sin(word.iTextRotation*Math.PI/180)+20*Math.sin(word.iTextRotation*Math.PI/180);
+			var vec1Y = -word.textShape.getTextHeight()/2*Math.cos(word.iTextRotation*Math.PI/180) - 20*Math.cos(word.iTextRotation*Math.PI/180);
+			Debugger.log(vec1X + " "+vec1Y);
+		});
+		this.selectionShapeRotationPoint.on("mouseout", function() {
+			document.body.style.cursor = "default";
+		});
+		
+		
 		
 		if(bBeforeSelected)
 			this.Select();
