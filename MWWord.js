@@ -115,6 +115,8 @@ function DragEndFunction(event)
 		}
 	}
 	
+	window.textlayer.add(word.textShape);
+	
 	//move all smaller words
 	if(!bReturnToOriginalPosition)
 	{
@@ -122,7 +124,9 @@ function DragEndFunction(event)
 		{
 			Debugger.log("MOVING "+aWordsToMove[k].sWord);
 			var currentWord = aWordsToMove[k];
-			currentWord.textShape.transitionTo({
+			currentWord.MoveToNewPosition();
+			
+			/*currentWord.textShape.transitionTo({
 				x: 0,
 				y: 0,
 				duration: 0.2,
@@ -130,12 +134,11 @@ function DragEndFunction(event)
 					Debugger.log("END TRANSITION");
 					window.TextHandler.UpdateTextPositions();
 				}
-			});
+			});*/
 		}
 	}
 	
 	document.body.style.cursor = "default";
-	window.textlayer.add(word.textShape);
 	window.textlayer.draw();
 }
 
@@ -379,6 +382,174 @@ function MWWord(word)
 			this.Select();
 		
 		window.selectionlayer.draw();
+	};
+	
+	this.MoveToNewPosition = function()
+	{
+		var pCurrentPos = new POINT(this.pPos.x, this.pPos.y);
+		
+		//only one of these can be true, it is the direction that the word has to move when a collision occurs
+		var bDown = false;
+		var bUp = false;
+		var bRight = true;
+		var bLeft = false;
+		
+		//how often the word was moved in one direction
+		var iCount = 0;
+		//how often the word has to be moved in one direction, before the direction has to be changed
+		var iCurrentValue = 1;
+		
+		//debug
+		var comparisons = 0;
+		
+		//true, as long no collision occurs
+		var bCanBeDrawn = false;
+		//true, when collision is detected
+		var bCollisionDetected = false;
+		while(!bCanBeDrawn)
+		{
+			//remove this shape to get only the children of the layer that need to be compared
+			window.textlayer.remove(this.textShape);
+			
+			//get other children of this layer
+			var layerChildren = window.textlayer.getChildren();
+			
+			//if current word is the first one, you can draw it directly
+			if(layerChildren.length == 0)
+			{
+				window.textlayer.add(this.textShape);
+				this.textShape.saveData();
+				break;
+			}
+			
+			bCollisionDetected = false;
+			bCanBeDrawn = true;
+			//go through all the points of the current text and look if it collides with a point at the layer
+			for(var i = 0; i < this.aDrawnPoints.length; i++)
+			{
+				
+				if(bCollisionDetected)
+					break;
+
+				//get current point
+				var x = this.aDrawnPoints[i].x;
+				var y = this.aDrawnPoints[i].y;
+				
+				if(!this.textShape.intersects(x,y))
+					Debugger.log("ERROR");
+				
+				//go through all children for collision detection
+				for(var j = 0; j < layerChildren.length; j++)
+				{
+					comparisons++;
+					//if collision is detected, move the current text by a certain amount
+					if(layerChildren[j].intersects(x,y))// && this.textShape.intersects(x,y))
+					{
+						Debugger.log(pCurrentPos.x + " " + pCurrentPos.y);
+						bCollisionDetected = true;
+						bCanBeDrawn = false;
+					
+						var oldX = pCurrentPos.x;
+						var oldY = pCurrentPos.y;
+						if(bRight)
+						{
+							pCurrentPos.x+=20;
+							iCount++;
+							if(iCount == iCurrentValue)
+							{
+								bRight = false;
+								bDown = true;
+								iCount = 0;
+							}
+							Debugger.log("RIGHT");
+						}
+						else if(bDown)
+						{
+							pCurrentPos.y+=20;
+							iCount++;
+							if(iCount == iCurrentValue)
+							{
+								bDown = false;
+								bLeft = true;
+								iCount = 0;
+								iCurrentValue++;
+							}
+							Debugger.log("DOWN");
+						}
+						else if(bLeft)
+						{
+							pCurrentPos.x-=20;
+							iCount++;
+							if(iCount == iCurrentValue)
+							{
+								bLeft = false;
+								bUp = true;
+								iCount = 0;
+							}
+							Debugger.log("LEFT");
+						}
+						else if(bUp)
+						{
+							pCurrentPos.y-=20;
+							iCount++;
+							if(iCount == iCurrentValue)
+							{
+								bUp = false;
+								bRight = true;
+								iCount = 0;
+								iCurrentValue++;
+							}
+							Debugger.log("UP");
+						}
+				
+						for(var k = 0; k < this.aDrawnPoints.length; k++)
+						{
+							this.aDrawnPoints[k].x += pCurrentPos.x-oldX;
+							this.aDrawnPoints[k].y += pCurrentPos.y-oldY;
+						}
+						
+						this.textShape.setX(pCurrentPos.x);
+						this.textShape.setY(pCurrentPos.y);
+				
+//						Debugger.log("Collision Detected 1");
+						break;
+					}
+				}
+			}
+			
+			
+			
+			//add the shape to the layer again
+			window.textlayer.add(this.textShape);
+			this.textShape.saveData();
+		}
+		
+		this.pPos.x = pCurrentPos.x;
+		this.pPos.y = pCurrentPos.y;
+		
+		/*this.textShape.transitionTo({
+			x: pCurrentPos.x,
+			y: pCurrentPos.y,
+			duration: 0.2,
+			callback: function() {
+				Debugger.log("END TRANSITION");
+				window.TextHandler.UpdateTextPositions();
+			}
+		});*/
+		
+		Debugger.log("Comparisons: "+comparisons);
+		
+		this.pStart.x = this.pPos.x;
+		this.pStart.y = this.pPos.y;
+		
+		this.CreateDrawnPointArray();
+		
+		this.iOriginalRotation = this.iTextRotation;
+		
+		// update the selection shape - only shown when text is selected
+		this.UpdateSelectionShape();
+		
+		window.textlayer.draw();
 	};
 	
 	this.Draw = function(stageWidth, stageHeight, aDrawnWords)

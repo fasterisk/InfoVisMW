@@ -116,7 +116,18 @@ function MWTextHandler()
 		//Sort the wordlist according to the count of the words
 		tempWordList.sort(WordSort);
 
+		var maxSize = 0;
+		for(var i = 0; i < tempWordList.length; i++)
+			if(tempWordList[i].iCount > maxSize)
+				maxSize = tempWordList[i].iCount;
 
+		while(maxSize > 15)
+		{
+			for(var i = 0; i < tempWordList.length; i++)
+				tempWordList[i].iCount--;
+			maxSize--;
+		}
+		
 		for ( var i = 0; i < tempWordList.length; i++)
 		{
 			Debugger.log(tempWordList[i].sWord + " " + tempWordList[i].iCount);
