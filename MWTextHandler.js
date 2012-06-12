@@ -28,7 +28,7 @@ function MWTextHandler()
 	this.UpdateTextPositions = function()
 	{
 		for(var i = 0; i < this.aWordList.length; i++)
-			this.aWordList[i].UpdatePosition();
+			this.aWordList[i].UpdatePosition(this.aWordList[i].textShape);
 	};
 
 	this.ReadText = function(text)

@@ -3,9 +3,9 @@ function MWCanvas(stage)
 	this.stage = stage;
 	this.textlayer = new Kinetic.Layer();
 	this.selectionlayer = new Kinetic.Layer();
-	this.stage.add(this.selectionlayer);
-	this.stage.add(this.textlayer);
 	
+	this.stage.add(this.textlayer);
+	this.stage.add(this.selectionlayer);
 	
 	this.sFillOrStroke = "fill";
 	this.sFont = "serif";
@@ -25,8 +25,9 @@ function MWCanvas(stage)
 		this.stage.reset();
 		this.textlayer = new Kinetic.Layer();
 		this.selectionlayer = new Kinetic.Layer();
-		this.stage.add(this.selectionlayer);
+		
 		this.stage.add(this.textlayer);
+		this.stage.add(this.selectionlayer);
 		
 		window.stage = this.stage;
 		window.textlayer = this.textlayer;
