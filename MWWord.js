@@ -516,10 +516,15 @@ function MWWord(word)
 			this.textShape.saveData();
 		}
 		
+		this.textShape.setX(this.pPos.x);
+		this.textShape.setY(this.pPos.y);
+		
+		
+		
 		this.pPos.x = pCurrentPos.x;
 		this.pPos.y = pCurrentPos.y;
 		
-		/*this.textShape.transitionTo({
+		this.textShape.transitionTo({
 			x: pCurrentPos.x,
 			y: pCurrentPos.y,
 			duration: 0.2,
@@ -527,7 +532,7 @@ function MWWord(word)
 				Debugger.log("END TRANSITION");
 				window.TextHandler.UpdateTextPositions();
 			}
-		});*/
+		});
 		
 		Debugger.log("Comparisons: "+comparisons);
 		
