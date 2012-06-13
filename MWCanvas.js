@@ -19,6 +19,9 @@ function MWCanvas(stage)
 	this.sFontStyle = "normal";
 	this.iTextRotation = 0;
 	
+	this.aDrawnWords = new Array();
+	this.aToDrawList = new Array();
+	
 	this.Draw = function()
 	{
 		
@@ -38,18 +41,33 @@ function MWCanvas(stage)
 		
 		this.UpdateWordStyles();
 		
-		var aDrawnWords = new Array();
+		this.aDrawnWords = new Array();
+		this.aToDrawList = new Array();
 		var aWordList = window.TextHandler.GetWordList();
 		for(var i = 0; i < aWordList.length; i++)
 		{
 			if(aWordList[i].iCount > 1)
-			{
-				aWordList[i].Draw(stage.getWidth(), stage.getHeight(), aDrawnWords);
-				aDrawnWords.push(aWordList[i]);
-			}
+				this.aToDrawList.push(aWordList[i]);
 		}
-		Debugger.log("OVERALL COMPARISONS: "+overall_comparisons);
+		
 		window.selectionlayer.draw();
+		
+		window.Canvas.DrawNextWord(0);
+	};
+	
+	this.DrawNextWord = function(index)
+	{
+		this.aToDrawList[index].Draw(this.stage.getWidth(), this.stage.getHeight(), this.aDrawnWords);
+		this.aDrawnWords.push(this.aToDrawList[index]);
+		
+		index++;
+		if(index < this.aToDrawList.length)
+		{
+			setTimeout(function() {
+				window.Canvas.DrawNextWord(index);
+			}, 200);
+		}
+			
 	};
 	
 	this.UpdateWordStyles = function() 
