@@ -48,7 +48,7 @@ function MWCanvas(stage)
 				aDrawnWords.push(aWordList[i]);
 			}
 		}
-		
+		Debugger.log("OVERALL COMPARISONS: "+overall_comparisons);
 		window.selectionlayer.draw();
 	};
 	

@@ -40,6 +40,8 @@ aKnownWords.push("cant");
 aKnownWords.push("because");
 aKnownWords.push("even");
 
+var overall_comparisons = 0;
+
 function IsWordInKnownList(word)
 {
 	for(var i = 0; i < aKnownWords.length; i++)

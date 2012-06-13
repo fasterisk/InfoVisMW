@@ -265,9 +265,9 @@ function MWWord(word)
 		var pLT = new POINT(this.pPos.x, this.pPos.y);
 		var pRB = new POINT(this.pPos.x, this.pPos.y);
 		
-		for(var y = this.pPos.y-this.iSpanWidth; y < this.pPos.y+this.iSpanWidth; y+=3)
+		for(var y = this.pPos.y-this.iSpanWidth; y < this.pPos.y+this.iSpanWidth; y+=2)
 		{
-			for(var x = this.pPos.x-this.iSpanWidth; x < this.pPos.x+this.iSpanWidth; x+=3)
+			for(var x = this.pPos.x-this.iSpanWidth; x < this.pPos.x+this.iSpanWidth; x+=2)
 			{
 				if(this.textShape.intersects(x,y))
 				{
@@ -456,6 +456,8 @@ function MWWord(word)
 //		Debugger.log(this.sWord+": MOVE TO NEW POSITION");
 		
 		var pCurrentPos = new POINT(this.pPos.x, this.pPos.y);
+		this.pStart.x = this.pPos.x;
+		this.pStart.y = this.pPos.y;
 		
 		//only one of these can be true, it is the direction that the word has to move when a collision occurs
 		var bDown = false;
@@ -533,6 +535,7 @@ function MWWord(word)
 				//go through all children for collision detection
 				for(var j = 0; j < aWordsToCompare.length; j++)
 				{
+					overall_comparisons++;
 					comparisons++;
 					//if collision is detected, move the current text by a certain amount
 					if(aWordsToCompare[j].intersects(x,y))
@@ -626,6 +629,16 @@ function MWWord(word)
 		this.pDrawnPointsOffset.x = 0;
 		this.pDrawnPointsOffset.y = 0;
 		this.BoundingBox.setOffset(0, 0);
+		
+		//LUXURY - transition
+		/*this.textShape.setX(this.pStart.x);
+		this.textShape.setY(this.pStart.y);
+
+		this.textShape.transitionTo({
+			x: this.pPos.x,
+			y: this.pPos.y,
+			duration: 0.2
+		})*/;
 		
 		//DEBUG
 //		this.BoundingBox.Draw();
