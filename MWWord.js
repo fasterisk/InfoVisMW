@@ -75,7 +75,6 @@ function DragEndFunction(event)
 					if(layerChildren[j].getFontSize() > word.textShape.getFontSize())
 					{
 						Debugger.log("COLLISION of "+word.sWord+"(smaller) with " +layerChildren[j].getName() + "(bigger)");
-						Debugger.log(-0.5*(word.iTextRotation-word.iOriginalRotation)*Math.PI/180);
 						//move current word back, no other word is moved
 						word.textShape.transitionTo({
 							x: word.pStart.x,
@@ -91,7 +90,6 @@ function DragEndFunction(event)
 								word.UpdatePosition(word.textShape);
 								word.Select();
 								word.UpdateSelectionShape();
-								word.CreateDrawnPointArray();
 							}
 						});
 						word.ChangeRotation(word.iOriginalRotation);
@@ -201,7 +199,7 @@ function MWWord(word)
 	
 	this.CreateDrawnPointArray = function()
 	{
-		Debugger.log("CALLING: CreateDrawnPointArray with pPos: ("+this.pPos.x + ","+this.pPos.y + ")");
+		Debugger.log("CALLING: CreateDrawnPointArray of "+this.sWord);
 		this.aDrawnPoints = new Array();
 		for(var y = this.pPos.y-this.iSpanWidth; y < this.pPos.y+this.iSpanWidth; y+=2)
 		{
@@ -378,6 +376,8 @@ function MWWord(word)
 	{
 		var pCurrentPos = new POINT(this.pPos.x, this.pPos.y);
 		
+//		Debugger.log(this.pDrawnPointsPosition.x == this.pPos.x && this.pDrawnPointsPosition.y ==this.pPos.y);
+		
 		//only one of these can be true, it is the direction that the word has to move when a collision occurs
 		var bDown = false;
 		var bUp = false;
@@ -507,8 +507,6 @@ function MWWord(word)
 				}
 			}
 			
-			
-			
 			//add the shape to the layer again
 			window.textlayer.add(this.textShape);
 			this.textShape.saveData();
@@ -520,12 +518,17 @@ function MWWord(word)
 		this.pPos.x = pCurrentPos.x;
 		this.pPos.y = pCurrentPos.y;
 		
+		this.pDrawnPointsPosition.x = this.pPos.x;
+		this.pDrawnPointsPosition.y = this.pPos.y;
+		this.pDrawnPointsOffset.x = 0;
+		this.pDrawnPointsOffset.y = 0;
+		
 		this.textShape.transitionTo({
 			x: pCurrentPos.x,
 			y: pCurrentPos.y,
 			duration: 0.2,
 			callback: function() {
-				Debugger.log("END TRANSITION");
+//				Debugger.log("END TRANSITION");
 				window.TextHandler.UpdateTextPositions();
 			}
 		});
@@ -534,8 +537,6 @@ function MWWord(word)
 		
 		this.pStart.x = this.pPos.x;
 		this.pStart.y = this.pPos.y;
-		
-		this.CreateDrawnPointArray();
 		
 		this.iOriginalRotation = this.iTextRotation;
 		
@@ -576,8 +577,6 @@ function MWWord(word)
 		window.textlayer.add(this.textShape);
 		this.textShape.saveData();
 		
-		
-		
 		//get the maximum span width of the word
 		this.iSpanWidth = Math.max(this.textShape.getTextWidth(), this.textShape.getTextHeight());
 		
@@ -613,7 +612,7 @@ function MWWord(word)
 		
 		//create an array that contains all drawn points of this word
 		this.CreateDrawnPointArray();
-		
+
 		//Move the word to a valid position
 		this.MoveToNewPosition();
 		
