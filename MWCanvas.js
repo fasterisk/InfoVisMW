@@ -1,20 +1,22 @@
 function MWCanvas(stage)
 {
 	this.stage = stage;
+	this.dummylayer = new Kinetic.Layer();
 	this.textlayer = new Kinetic.Layer();
 	this.selectionlayer = new Kinetic.Layer();
 	
+	this.stage.add(this.dummylayer);
 	this.stage.add(this.textlayer);
 	this.stage.add(this.selectionlayer);
 	
 	this.sFillOrStroke = "fill";
 	this.sFont = "serif";
 	this.sBackgroundColor = "#ffffff";
-	this.sFillColor1 = "#ff0000";
-	this.sFillColor2 = "#00ff00";
-	this.sFillColor3 = "#0000ff";
-	this.sFillColor4 = "#ffff00";
-	this.sFillColor5 = "#ff00ff";
+	this.sFillColor1 = "#C20000";
+	this.sFillColor2 = "#00AD00";
+	this.sFillColor3 = "#00008C";
+	this.sFillColor4 = "#737300";
+	this.sFillColor5 = "#910091";
 	this.sFontWeight = "normal";
 	this.sFontStyle = "normal";
 	this.iTextRotation = 0;
@@ -26,11 +28,15 @@ function MWCanvas(stage)
 	{
 		
 		this.stage.reset();
+		this.dummylayer = new Kinetic.Layer();
 		this.textlayer = new Kinetic.Layer();
 		this.selectionlayer = new Kinetic.Layer();
 		
+		this.stage.add(this.dummylayer);
 		this.stage.add(this.textlayer);
 		this.stage.add(this.selectionlayer);
+		
+		this.DrawDummyRectangle();
 		
 		window.stage = this.stage;
 		window.textlayer = this.textlayer;
@@ -51,6 +57,28 @@ function MWCanvas(stage)
 		}
 		
 		window.selectionlayer.draw();
+		
+		this.dummylayer.on("mousedown", function(event){
+			var aDrawnWords = window.Canvas.GetDrawnWordsList();
+			var bIntersect = false;
+			for(var i = 0; i < aDrawnWords.length; i++)
+			{
+				if(aDrawnWords[i].textShape.intersects(event.offsetX, event.offsetY))
+				{
+					bIntersect = true;
+					break;
+				}
+			}
+			if(!bIntersect)
+			{
+				var selectedWord = window.TextHandler.GetSelectedWord();
+				if(selectedWord != undefined)
+					selectedWord.Unselect();
+				
+				window.TextHandler.SelectWord(undefined);
+				window.selectionlayer.draw();
+			}
+		});
 		
 		window.Canvas.DrawNextWord(0);
 	};
@@ -153,5 +181,21 @@ function MWCanvas(stage)
 	this.SetTextRotation = function(rotation)
 	{
 		this.iTextRotation = parseInt(rotation);
+	};
+	
+	this.GetDrawnWordsList = function()
+	{
+		return this.aDrawnWords;
+	};
+	
+	this.DrawDummyRectangle = function()
+	{
+		var rectangle = new Kinetic.Rect({
+			x: 0,
+			y: 0,
+			width: 800,
+			height: 600
+		});
+		this.dummylayer.add(rectangle);
 	};
 }

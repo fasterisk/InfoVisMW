@@ -1,6 +1,6 @@
 <style type="text/css" media="all">
 body {
-
+	font: normal 12px arial, sans-serif;
 }
 
 canvas {
@@ -42,5 +42,9 @@ a.button:active {
 a.button:active span {
     background-position: bottom left;
     padding: 5px 0 4px 18px; /* push text down 1px */
+}
+
+option {
+	font: normal 12px arial, sans-serif;
 }
 </style>
