@@ -7,6 +7,17 @@ canvas {
 	border: 1px solid #9C9898;
 }
 
+#maniwordlecanvas{
+	text-align:center;
+	margin-left: -800px;
+}
+
+#loadingDiv{
+	text-align:center;
+	padding-top: 200px;
+	margin: 0 auto;
+}
+
 #createDiv{
 	font: normal 12px arial, sans-serif;
 	margin-left: auto;

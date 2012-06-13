@@ -95,6 +95,12 @@ function MWCanvas(stage)
 				window.Canvas.DrawNextWord(index);
 			}, 200);
 		}
+		else
+		{
+			document.getElementById("loadingDiv").style.display = 'none';
+			document.getElementById("maniwordlecanvas").style.display = 'block';
+			document.getElementById("changeDiv").style.display = 'block';
+		}
 			
 	};
 	

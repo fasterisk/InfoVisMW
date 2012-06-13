@@ -5,6 +5,7 @@ function eventWindowLoaded()
 	//hide interface for second page
 	document.getElementById("changeDiv").style.display = 'none';
 	document.getElementById("maniwordlecanvas").style.display = 'none';
+	document.getElementById("loadingDiv").style.display = 'none';
 	
 	window.TextHandler = new MWTextHandler();
 	window.CurrentText = "maniwordle maniwordle maniwordle maniwordle maniwordle wordle wordle wordle";
@@ -65,8 +66,7 @@ function MainApp()
 
 	function submitButtonClicked(e)
 	{
-		document.getElementById("maniwordlecanvas").style.display = 'block';
-		document.getElementById("changeDiv").style.display = 'block';
+		document.getElementById("loadingDiv").style.display = 'block';
 		document.getElementById("createDiv").style.display = 'none';
 		window.TextHandler.ReadText(window.CurrentText);
 		if(window.stage == undefined)
@@ -81,6 +81,7 @@ function MainApp()
 		
 		window.Canvas.UpdateWordStyles();
 		window.Canvas.Draw();
+		
 		
 	}
 
