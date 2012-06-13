@@ -6,6 +6,9 @@ function POINT(x,y){
 function DragStartFunction(event)
 {
 	var word = window.TextHandler.GetWord(event.shape.getName());
+	
+//	Debugger.log(word.sWord+": DRAG START FUNCTION");
+	
 	word.iOriginalRotation = word.iTextRotation;
 	word.pStart.x = word.pPos.x;
 	word.pStart.y = word.pPos.y;
@@ -15,6 +18,10 @@ function DragMoveFunction(event)
 {
 	var word = window.TextHandler.GetWord(event.shape.getName());
 	
+//	Debugger.log(word.sWord+": DRAG MOVE FUNCTION");
+	
+//	word.BoundingBox.Draw();
+	
 	event.shape.saveData();
 	
 	//update position
@@ -23,6 +30,7 @@ function DragMoveFunction(event)
 	
 	word.pDrawnPointsOffset.x = word.pPos.x - word.pDrawnPointsPosition.x;
 	word.pDrawnPointsOffset.y = word.pPos.y - word.pDrawnPointsPosition.y;
+	word.BoundingBox.setOffset(word.pDrawnPointsOffset.x, word.pDrawnPointsOffset.y);
 	
 	//set alpha of all other words to 0.5
 	window.textlayer.remove(word.textShape);
@@ -40,12 +48,44 @@ function DragEndFunction(event)
 	var word = window.TextHandler.GetWord(event.shape.getName());
 	word.UpdatePosition(word.textShape);
 	
+//	Debugger.log(word.sWord+": DRAG END FUNCTION");
+	
+	if(word.iOriginalRotation != word.iTextRotation)
+	{
+//		Debugger.log(word.sWord+":UPDATE DRAWN POINT ARRAY because originalrotation != textrotation");
+		word.CreateDrawnPointArray();
+	}
+	
 	window.textlayer.remove(word.textShape);
 	
 	//set alpha of all other words to 1 again
 	var layerChildren = window.textlayer.getChildren();
 	for(var i = 0; i < layerChildren.length; i++)
 		layerChildren[i].setAlpha(1);
+	
+	var aWordsToCompare = new Array();
+	for(var i = 0; i < layerChildren.length; i++)
+	{
+		var comparingWord = window.TextHandler.GetWord(layerChildren[i].getName());
+		if(word.BoundingBox.collidesWith(comparingWord.BoundingBox))
+		{
+			aWordsToCompare.push(comparingWord.textShape);
+		}
+	}
+	
+	if(aWordsToCompare.length == 0)
+	{
+//		Debugger.log(word.sWord+": NO WORDS TO COMPARE BECAUSE OF THE BOUNDING BOX");
+		window.textlayer.add(word.textShape);
+		word.textShape.saveData();
+		document.body.style.cursor = "default";
+		window.textlayer.draw();
+		return;
+	}
+	else
+	{
+//		Debugger.log(word.sWord+": "+aWordsToCompare.length+" WORDS TO COMPARE BECAUSE OF THE BOUNDING BOX");
+	}
 	
 	/*
 	 * collision detection - when a bigger word is under the current drop position, current word is moved back again
@@ -64,17 +104,17 @@ function DragEndFunction(event)
 			if(!word.textShape.intersects(x,y))
 				Debugger.log("ERROR: Drawnpoint does not intersect word!");
 
-			for(var j = 0; j < layerChildren.length; j++)
+			for(var j = 0; j < aWordsToCompare.length; j++)
 			{
-				if(aWordsAlreadyToMove.length < layerChildren.length)
+				if(aWordsAlreadyToMove.length < aWordsToCompare.length)
 					aWordsAlreadyToMove.push(false);
-
-				if(!aWordsAlreadyToMove[j] && layerChildren[j].intersects(x,y))
+				
+				if(!aWordsAlreadyToMove[j] && aWordsToCompare[j].intersects(x,y))
 				{
 					
-					if(layerChildren[j].getFontSize() > word.textShape.getFontSize())
+					if(aWordsToCompare[j].getFontSize() > word.textShape.getFontSize())
 					{
-						Debugger.log("COLLISION of "+word.sWord+"(smaller) with " +layerChildren[j].getName() + "(bigger)");
+//						Debugger.log("COLLISION of "+word.sWord+"(smaller) with " +aWordsToCompare[j].getName() + "(bigger)");
 						//move current word back, no other word is moved
 						word.textShape.transitionTo({
 							x: word.pStart.x,
@@ -82,17 +122,29 @@ function DragEndFunction(event)
 							duration: 0.2,
 							rotation: (word.iOriginalRotation)*Math.PI/180,
 							callback: function() {
+//								Debugger.log("CALLBACK of transition of "+word.sWord);
 								word.pPos.x = word.pStart.x;
 								word.pPos.y = word.pStart.y;
 								word.pDrawnPointsOffset.x = word.pPos.x - word.pDrawnPointsPosition.x;
 								word.pDrawnPointsOffset.y = word.pPos.y - word.pDrawnPointsPosition.y;
 								word.textShape.saveData();
-								word.UpdatePosition(word.textShape);
+								word.textShape.setRotationDeg(word.iOriginalRotation);
+								
+								
+								if(word.iOriginalRotation != word.iTextRotation)
+								{
+									word.iTextRotation = word.iOriginalRotation;
+									word.CreateDrawnPointArray();
+								}
+								word.BoundingBox.setOffset(word.pDrawnPointsOffset.x, word.pDrawnPointsOffset.y);
+//								word.BoundingBox.Draw();
+								
 								word.Select();
 								word.UpdateSelectionShape();
+								//word.ChangeRotation(word.iOriginalRotation);
+								window.selectionlayer.draw();
 							}
 						});
-						word.ChangeRotation(word.iOriginalRotation);
 						word.Unselect();
 						window.selectionlayer.draw();
 						bReturnToOriginalPosition = true;
@@ -100,11 +152,11 @@ function DragEndFunction(event)
 					}
 					else
 					{
-						Debugger.log("COLLISION of "+word.sWord+"(bigger) with " +layerChildren[j].getName()+"(smaller)");
+//						Debugger.log("COLLISION of "+word.sWord+"(bigger) with " +aWordsToCompare[j].getName()+"(smaller)");
 						//add smaller word to the ones that have to move - moving is done later
 
 						aWordsAlreadyToMove[j] = true;
-						aWordsToMove.push(window.TextHandler.GetWord(layerChildren[j].getText()));
+						aWordsToMove.push(window.TextHandler.GetWord(aWordsToCompare[j].getText()));
 					}
 					
 				}
@@ -112,17 +164,22 @@ function DragEndFunction(event)
 		}
 	}
 	
+//	word.BoundingBox.Draw();
 	window.textlayer.add(word.textShape);
 	
 	//move all smaller words
 	if(!bReturnToOriginalPosition)
 	{
+		if(word.iOriginalRotation != word.iTextRotation)
+		{
+			word.iOriginalRotation = word.iTextRotation;
+			word.textShape.setRotationDeg(word.iOriginalRotation);
+		}
 		for(var k = 0; k < aWordsToMove.length; k++)
 		{
-			Debugger.log("MOVING "+aWordsToMove[k].sWord);
+//			Debugger.log("MOVING "+aWordsToMove[k].sWord);
 			var currentWord = aWordsToMove[k];
 			currentWord.MoveToNewPosition();
-			
 		}
 	}
 	
@@ -162,6 +219,8 @@ function MWWord(word)
 	
 	this.selectionShapeRotationPointStart = new POINT(0,0);
 	
+	this.BoundingBox = new MWBoundingBox(word);
+	
 	this.IncreaseCount = function()
 	{
 		this.iCount++;
@@ -194,29 +253,48 @@ function MWWord(word)
 	
 	this.ChangeRotation = function(rotation)
 	{
+//		Debugger.log(this.sWord+": CHANGE ROTATION");
 		this.iTextRotation = rotation;
 	};
 	
 	this.CreateDrawnPointArray = function()
 	{
-		Debugger.log("CALLING: CreateDrawnPointArray of "+this.sWord);
+//		Debugger.log(this.sWord+": CREATE DRAWN POINT ARRAY");
 		this.aDrawnPoints = new Array();
-		for(var y = this.pPos.y-this.iSpanWidth; y < this.pPos.y+this.iSpanWidth; y+=2)
+		
+		var pLT = new POINT(this.pPos.x, this.pPos.y);
+		var pRB = new POINT(this.pPos.x, this.pPos.y);
+		
+		for(var y = this.pPos.y-this.iSpanWidth; y < this.pPos.y+this.iSpanWidth; y+=3)
 		{
-			for(var x = this.pPos.x-this.iSpanWidth; x < this.pPos.x+this.iSpanWidth; x+=2)
+			for(var x = this.pPos.x-this.iSpanWidth; x < this.pPos.x+this.iSpanWidth; x+=3)
 			{
 				if(this.textShape.intersects(x,y))
+				{
+					if(x < pLT.x)
+						pLT.x = x;
+					if(x > pRB.x)
+						pRB.x = x;
+					if(y < pLT.y)
+						pLT.y = y;
+					if(y > pRB.y)
+						pRB.y = y;
 					this.aDrawnPoints.push(new POINT(x,y));
+				}
 			}
 		}
+		this.BoundingBox.setLT(pLT.x, pLT.y);
+		this.BoundingBox.setRB(pRB.x, pRB.y);
+		this.BoundingBox.setOffset(0,0);
 		
-//		Debugger.log("DRAWNPOINTS: length: "+this.aDrawnPoints.length);
+//		Debugger.log(this.sWord+": DRAWNPOINTS: length: "+this.aDrawnPoints.length);
 		this.pDrawnPointsPosition = new POINT(this.pPos.x, this.pPos.y);
 		this.pDrawnPointsOffset = new POINT(0,0);
 	};
 	
 	this.Unselect = function()
 	{
+//		Debugger.log(this.sWord+": UNSELECT");
 		if(this.bSelected)
 		{
 			window.selectionlayer.remove(this.selectionShapeRect);
@@ -228,6 +306,7 @@ function MWWord(word)
 	
 	this.Select = function()
 	{
+//		Debugger.log(this.sWord+": SELECT");
 		if(!this.bSelected)
 		{
 			window.selectionlayer.add(this.selectionShapeRect);
@@ -239,6 +318,7 @@ function MWWord(word)
 	
 	this.UpdatePosition = function(shape)
 	{
+//		Debugger.log(this.sWord+": UPDATE POSITION");
 		shape.saveData();
 		this.pPos.x = shape.getX();
 		this.pPos.y = shape.getY();
@@ -251,6 +331,8 @@ function MWWord(word)
 	
 	this.UpdateSelectionShape = function()
 	{
+//		Debugger.log(this.sWord+": UPDATE SELECTION SHAPE");
+		
 		var bBeforeSelected = this.bSelected;
 		if(this.bSelected)
 			this.Unselect();
@@ -318,6 +400,8 @@ function MWWord(word)
 		this.selectionShapeRotationPoint.on("dragmove", function(event) {
 			var word = window.TextHandler.GetWord(event.shape.getName());
 			
+//			Debugger.log(word.sWord+": DRAGMOVE ROTATION POINT");
+			
 			var vec1X = word.textShape.getTextHeight()/2*Math.sin(word.iTextRotation*Math.PI/180)+20*Math.sin(word.iTextRotation*Math.PI/180);
 			var vec1Y = -word.textShape.getTextHeight()/2*Math.cos(word.iTextRotation*Math.PI/180) - 20*Math.cos(word.iTextRotation*Math.PI/180);
 			var vec2X = event.shape.getX() - word.pPos.x;
@@ -352,9 +436,6 @@ function MWWord(word)
 		});
 		
 		this.selectionShapeRotationPoint.on("dragend", function(event){
-			var word = window.TextHandler.GetWord(event.shape.getName());
-			
-			word.CreateDrawnPointArray();
 			DragEndFunction(event);
 		});
 		this.selectionShapeRotationPoint.on("mouseover", function(event) {
@@ -364,8 +445,6 @@ function MWWord(word)
 			document.body.style.cursor = "default";
 		});
 		
-		
-		
 		if(bBeforeSelected)
 			this.Select();
 		
@@ -374,9 +453,9 @@ function MWWord(word)
 	
 	this.MoveToNewPosition = function()
 	{
-		var pCurrentPos = new POINT(this.pPos.x, this.pPos.y);
+//		Debugger.log(this.sWord+": MOVE TO NEW POSITION");
 		
-//		Debugger.log(this.pDrawnPointsPosition.x == this.pPos.x && this.pDrawnPointsPosition.y ==this.pPos.y);
+		var pCurrentPos = new POINT(this.pPos.x, this.pPos.y);
 		
 		//only one of these can be true, it is the direction that the word has to move when a collision occurs
 		var bDown = false;
@@ -407,9 +486,32 @@ function MWWord(word)
 			//if current word is the first one, you can draw it directly
 			if(layerChildren.length == 0)
 			{
+//				Debugger.log(this.sWord+"("+pCurrentPos.x+","+pCurrentPos.y+") : NO WORDS TO COMPARE BECAUSE CURRENTLY THERE EXISTS ONLY THIS WORD");
 				window.textlayer.add(this.textShape);
 				this.textShape.saveData();
 				break;
+			}
+			
+			var aWordsToCompare = new Array();
+			for(var i = 0; i < layerChildren.length; i++)
+			{
+				var comparingWord = window.TextHandler.GetWord(layerChildren[i].getName());
+				if(this.BoundingBox.collidesWith(comparingWord.BoundingBox))
+				{
+					aWordsToCompare.push(comparingWord.textShape);
+				}
+			}
+			
+			if(aWordsToCompare.length == 0)
+			{
+//				Debugger.log(this.sWord+"("+pCurrentPos.x+","+pCurrentPos.y+") : NO WORDS TO COMPARE BECAUSE OF THE BOUNDING BOX");
+				window.textlayer.add(this.textShape);
+				this.textShape.saveData();
+				break;
+			}
+			else
+			{
+//				Debugger.log(this.sWord+"("+pCurrentPos.x+","+pCurrentPos.y+") : "+ aWordsToCompare.length+" WORDS TO COMPARE BECAUSE OF THE BOUNDING BOX");
 			}
 			
 			bCollisionDetected = false;
@@ -426,14 +528,14 @@ function MWWord(word)
 				var y = this.aDrawnPoints[i].y;
 				
 				if(!this.textShape.intersects(x,y))
-					Debugger.log("ERROR");
+					Debugger.log(this.sWord+"("+pCurrentPos.x+","+pCurrentPos.y+") : ERROR");
 				
 				//go through all children for collision detection
-				for(var j = 0; j < layerChildren.length; j++)
+				for(var j = 0; j < aWordsToCompare.length; j++)
 				{
 					comparisons++;
 					//if collision is detected, move the current text by a certain amount
-					if(layerChildren[j].intersects(x,y))
+					if(aWordsToCompare[j].intersects(x,y))
 					{
 //						Debugger.log(pCurrentPos.x + " " + pCurrentPos.y);
 						bCollisionDetected = true;
@@ -497,6 +599,10 @@ function MWWord(word)
 							this.aDrawnPoints[k].x += pCurrentPos.x-oldX;
 							this.aDrawnPoints[k].y += pCurrentPos.y-oldY;
 						}
+						this.BoundingBox.pLT.x += pCurrentPos.x-oldX;
+						this.BoundingBox.pLT.y += pCurrentPos.y-oldY;
+						this.BoundingBox.pRB.x += pCurrentPos.x-oldX;
+						this.BoundingBox.pRB.y += pCurrentPos.y-oldY;
 						
 						this.textShape.setX(pCurrentPos.x);
 						this.textShape.setY(pCurrentPos.y);
@@ -512,9 +618,6 @@ function MWWord(word)
 			this.textShape.saveData();
 		}
 		
-		this.textShape.setX(this.pPos.x);
-		this.textShape.setY(this.pPos.y);
-		
 		this.pPos.x = pCurrentPos.x;
 		this.pPos.y = pCurrentPos.y;
 		
@@ -522,18 +625,12 @@ function MWWord(word)
 		this.pDrawnPointsPosition.y = this.pPos.y;
 		this.pDrawnPointsOffset.x = 0;
 		this.pDrawnPointsOffset.y = 0;
+		this.BoundingBox.setOffset(0, 0);
 		
-		this.textShape.transitionTo({
-			x: pCurrentPos.x,
-			y: pCurrentPos.y,
-			duration: 0.2,
-			callback: function() {
-//				Debugger.log("END TRANSITION");
-				window.TextHandler.UpdateTextPositions();
-			}
-		});
+		//DEBUG
+//		this.BoundingBox.Draw();
 		
-		Debugger.log("Comparisons: "+comparisons);
+//		Debugger.log(this.sWord+": PIXEL COMPARISONS: "+comparisons);
 		
 		this.pStart.x = this.pPos.x;
 		this.pStart.y = this.pPos.y;
@@ -548,7 +645,7 @@ function MWWord(word)
 	
 	this.Draw = function(stageWidth, stageHeight, aDrawnWords)
 	{
-		Debugger.log("DRAWING: "+ this.sWord);
+//		Debugger.log(this.sWord+": DRAWING");
 		
 		//Initial drawing position
 		this.pPos.x = stageWidth / 2;
