@@ -1,17 +1,11 @@
 window.addEventListener('load', eventWindowLoaded, false);
 
-function writeMessage(messageLayer, message) {
-	Debugger.log(message);
-    var context = messageLayer.getContext();
-    messageLayer.clear();
-    context.font = "18pt Calibri";
-    context.fillStyle = "black";
-    context.fillText(message, 10, 25);
-    
-  }
-
 function eventWindowLoaded()
 {
+	//hide interface for second page
+	document.getElementById("changeDiv").style.display = 'none';
+	document.getElementById("maniwordlecanvas").style.display = 'none';
+	
 	window.TextHandler = new MWTextHandler();
 	window.CurrentText = "maniwordle maniwordle maniwordle maniwordle maniwordle wordle wordle wordle";
 	window.TextHandler.ReadText(window.CurrentText);
@@ -25,15 +19,7 @@ function MainApp()
 		return;
 	}
 	
-	window.stage = new Kinetic.Stage({
-		container: "container",
-		width: 800,
-		height: 600
-	});
-	
-	window.Canvas = new MWCanvas(stage);
-	
-	//Add event listener
+	//Add event listener for creation page
 	var formElement = document.getElementById("textBox");
 	formElement.addEventListener('keyup', textBoxChanged, false);
 
@@ -66,9 +52,11 @@ function MainApp()
 	formElement = document.getElementById("textRotation");
 	formElement.addEventListener('change', textRotationChanged, false);
 	
-	//Initial DrawScreen call
-	window.Canvas.Draw();
-
+	//Add eventlistener for changing page
+	formElement = document.getElementById("returnToCreate");
+	formElement.addEventListener('click', returnButtonClicked, false);
+	
+	
 	function textBoxChanged(e)
 	{
 		var target = e.target;
@@ -77,9 +65,23 @@ function MainApp()
 
 	function submitButtonClicked(e)
 	{
+		document.getElementById("maniwordlecanvas").style.display = 'block';
+		document.getElementById("changeDiv").style.display = 'block';
+		document.getElementById("createDiv").style.display = 'none';
 		window.TextHandler.ReadText(window.CurrentText);
+		if(window.stage == undefined)
+		{
+			window.stage = new Kinetic.Stage({
+				container: "maniwordlecanvas",
+				width: 800,
+				height: 600
+			});
+			window.Canvas = new MWCanvas(stage);
+		}
+		
 		window.Canvas.UpdateWordStyles();
 		window.Canvas.Draw();
+		
 	}
 
 	function fillOrStrokeChanged(e)
@@ -135,4 +137,13 @@ function MainApp()
 		var target = e.target;
 		window.Canvas.SetTextRotation(target.value);
 	}
+	
+	
+	function returnButtonClicked(e)
+	{
+		document.getElementById("changeDiv").style.display = 'none';
+		document.getElementById("createDiv").style.display = 'block';
+		document.getElementById("maniwordlecanvas").style.display = 'none';
+	}
+	
 }

@@ -6,7 +6,7 @@
 		<link rel="stylesheet" type="text/css" href="styles.css">
 		<script src="libs/modernizr-2.5.3.js"></script>
 		<script src="libs/jscolor/jscolor.js"></script>
-		<script src="http://www.html5canvastutorials.com/libraries/kinetic-v3.9.8.js"></script>
+		<script src="libs/kinetic-v3.9.8.js"></script>
 		<script src="MWHelper.js"></script>
 		<script src="MWBoundingBox.js"></script>
 		<script src="MWKnownWords.js"></script>
@@ -16,9 +16,13 @@
 		<script src="MWMain.js"></script>
 	</head>
 	<body>
-		<div style="position: absolute; top: 0px; left: 0px;">
-			<div id="container"></div>
-			
+		<div id="maniwordlecanvas"></div>
+		<div id="changeDiv">
+			<form>
+				<button id="returnToCreate" type="button">Return</button>
+			</form>
+		</div>
+		<div id="createDiv">
 			<form>
 				<textarea id="textBox" placeholder="text" rows="10" cols="20" ></textarea>
 				<button id="textSubmitButton" type="button">Submit text!</button>
