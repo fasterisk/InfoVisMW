@@ -70,12 +70,13 @@ function DragEndFunction(event)
 					Debugger.log("COLLISION of "+word.sWord+"with + " +layerChildren[j].getName());
 					if(layerChildren[j].getFontSize() > word.textShape.getFontSize())
 					{
-						
+						Debugger.log(-0.5*(word.iTextRotation-word.iOriginalRotation)*Math.PI/180);
 						//move current word back, no other word is moved
 						word.textShape.transitionTo({
 							x: word.pStart.x,
 							y: word.pStart.y,
 							duration: 0.2,
+							rotation: (word.iOriginalRotation)*Math.PI/180,
 							callback: function() {
 								word.pPos.x = word.pStart.x;
 								word.pPos.y = word.pStart.y;
@@ -126,15 +127,6 @@ function DragEndFunction(event)
 			var currentWord = aWordsToMove[k];
 			currentWord.MoveToNewPosition();
 			
-			/*currentWord.textShape.transitionTo({
-				x: 0,
-				y: 0,
-				duration: 0.2,
-				callback: function() {
-					Debugger.log("END TRANSITION");
-					window.TextHandler.UpdateTextPositions();
-				}
-			});*/
 		}
 	}
 	
