@@ -185,7 +185,7 @@ function MainApp()
 		var target = e.target;
 		var word = window.TextHandler.GetSelectedWord();
 		word.ChangeFont(target.value);
-		word.UpdateDrawing();
+		word.UpdateDrawing(true);
 	}
 
 	function fontWeightChanged_page2(e)
@@ -217,7 +217,7 @@ function MainApp()
 			break;
 		case "textFillColor_page2":
 			word.ChangeFillColor("#" + target.value);
-			word.UpdateDrawing();
+			word.UpdateDrawing(false);
 			break;
 		}
 	}

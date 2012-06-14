@@ -3,6 +3,11 @@ function canvasSupport()
 	return Modernizr.canvas;
 }
 
+function Event()
+{
+	this.shape = undefined;
+}
+
 var Debugger = function()
 {
 };

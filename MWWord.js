@@ -234,7 +234,7 @@ function MWWord(word)
 	
 	this.ChangeFont = function(font)
 	{
-		this.sFontStyle = font;
+		this.sFont = font;
 	};
 	
 	this.ChangeFillColor = function(fillcolor)
@@ -752,7 +752,7 @@ function MWWord(word)
 		
 	};
 	
-	this.UpdateDrawing = function()
+	this.UpdateDrawing = function(updatedrawnpointsarray)
 	{
 		window.textlayer.remove(this.textShape);
 		
@@ -807,6 +807,18 @@ function MWWord(word)
 			
 			window.selectionlayer.draw();
 		});
+		
+		if(updatedrawnpointsarray)
+		{
+			this.CreateDrawnPointArray();
+			
+			var event = new Event();
+			event.shape = this.textShape;
+			DragStartFunction(event);
+			DragMoveFunction(event);
+			DragEndFunction(event);
+			this.UpdateSelectionShape();
+		}
 		
 		window.textlayer.draw();
 	};
