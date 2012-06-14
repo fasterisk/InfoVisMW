@@ -1,6 +1,10 @@
 <style type="text/css" media="all">
 body {
 	font: normal 12px arial, sans-serif;
+	margin:0;
+	padding:0;
+	width:100%;
+	heihgt:100%;
 }
 
 canvas {
@@ -14,15 +18,24 @@ canvas {
 
 #loadingDiv{
 	text-align:center;
+	font: normal 20px arial, sans-serif;
 	padding-top: 200px;
 	margin: 0 auto;
 }
 
-#createDiv{
+#createDiv1{
 	font: normal 12px arial, sans-serif;
-	margin-left: auto;
-	margin-right: auto;
+	margin-left:auto;
+	margin-right:auto;
 	text-align:center;
+	color: #444;
+}
+
+#createDiv2{
+	width: 250px;
+	font: normal 12px arial, sans-serif;
+	margin-left:auto;
+	margin-right:auto;
 	color: #444;
 }
 
@@ -30,15 +43,15 @@ canvas {
 	font: normal 12px arial, sans-serif;
 	margin-left: auto;
 	margin-right: auto;
-	text-align:center;
 	color: #444;
+	width: 250px;
 }
 
 #changeDiv2{
 	font: normal 12px arial, sans-serif;
+	width: 250px;
 	margin-left: auto;
 	margin-right: auto;
-	text-align:center;
 	color: #444;
 }
 	
@@ -46,8 +59,6 @@ a.button {
     background: transparent url('img/bg_button_a.gif') no-repeat scroll top right;
     color: #444;
     font: normal 12px arial, sans-serif;
-    margin-left: auto;
-	margin-right: auto;
     height: 24px;
     padding: 5px 18px 4px 0; /* sliding doors padding */
     text-decoration: none;
@@ -74,4 +85,29 @@ a.button:active span {
 option {
 	font: normal 12px arial, sans-serif;
 }
+
+select {
+	width: 105px;
+	margin-left:25%;
+	font: normal 12px arial, sans-serif;
+	color: #444;
+}
+
+input.slider {
+	margin-left:25%;
+	width: 100px;
+}
+
+input.color{
+	font: normal 12px arial, sans-serif;
+	text-align:center;
+	margin-left:25%;
+	width: 100px;
+}
+
+input.checkbox{
+	margin-left: 100%;
+}
+
+
 </style>

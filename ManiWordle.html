@@ -19,112 +19,191 @@
 		<script src="MWMain.js"></script>
 	</head>
 	<body>
-		<div id="createDiv">
-			Welcome to ManiWordle! bla bla bla bla
+		<div id="createDiv1">
+			Spechtenhauser Florian, 0826226
+			<h1>Welcome to ManiWordle!</h1>
+			<h2>Create a word cloud with the possibility to change the words individually.</h2> 
+			<br>
+			Change the options of the first generation of the word cloud below the textarea. 
+			<br>
+			After the generation you can change the appearance, position and rotation
+			of each individual word.
+			<br>If you are happy about the resulting word cloud, you can save it as png image
+			to your file system.
+			<br>
+			
 			<form>
-				<textarea id="textBox" placeholder="text" rows="20" cols="100" ></textarea>
+				<textarea id="textBox" placeholder="Enter text here..." rows="20" cols="100" ></textarea>
 				<br>
 				<br>
-				<a id="textSubmitButton" class="button" href="#"><span>Submit text!</span></a>
+				<a id="textSubmitButton" class="button" href="#"><span>Create!</span></a>
 				<br>
 				<br>
-				Text Font:
-				<select id="textFont">
-					<option value="serif">serif</option>
-					<option value="sans-serif">sans-serif</option>
-					<option value="cursive">cursive</option>
-					<option value="fantasy">fantasy</option>
-					<option value="monospace">monospace</option>
-				</select>
-				<br>
-				Font Style: 
-				<select id="fontStyle">
-					<option value="normal">normal</option>
-					<option value="italic">italic</option>
-					<option value="bold">bold</option>
-				</select>
-				<br>
-				Fill Option:
-				<select id="fillOrStroke">
-					<option value="fill">Fill</option>
-					<option value="fill+stroke">Fill + Border</option>
-				</select>
-				<br>
-				Background Color: 
-				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="backGroundColor" value="000000" />
-				<br>
-				Text Color 1: 
-				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor1" value="C20000" />
-				<br>
-				Text Color 2: 
-				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor2" value="00AD00" />
-				<br>
-				Text Color 3: 
-				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor3" value="00008C" />
-				<br>
-				Text Color 4: 
-				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor4" value="737300" />
-				<br>
-				Text Color 5: 
-				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor5" value="910091" />
-				<br>
-				Border Color:
-				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="borderColor" value="000000" />
-				<br>
-				Maximum Text rotation:
-				<input type="range" id="textRotation" min="0" max="90" step="1" value="0" />
+			</form>
+		</div>
+		<div id="createDiv2">
+			<form>
+			<table>
+				<tr>
+					<td>Text Font:</td>
+					<td>
+						<select id="textFont">
+							<option value="serif">serif</option>
+							<option value="sans-serif">sans-serif</option>
+							<option value="cursive">cursive</option>
+							<option value="fantasy">fantasy</option>
+							<option value="monospace">monospace</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>Font Style:</td>
+					<td>
+						<select id="fontStyle">
+							<option value="normal">normal</option>
+							<option value="italic">italic</option>
+							<option value="bold">bold</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>Fill Option:</td>
+					<td>
+						<select id="fillOrStroke">
+							<option value="fill">Fill</option>
+							<option value="fill+stroke">Fill + Border</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>Background Color:</td> 
+					<td>
+						<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="backGroundColor" value="000000" />
+					</td>
+				</tr>
+				<tr>
+					<td>Text Color 1:</td>
+					<td>
+						<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor1" value="C20000" />
+					</td>
+				</tr>
+				<tr>
+					<td>Text Color 2:</td>
+					<td>
+						<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor2" value="00AD00" />
+					</td>
+				</tr>
+				<tr>
+					<td>Text Color 3:</td>
+					<td>
+						<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor3" value="00008C" />
+					</td>
+				</tr>
+				<tr>
+					<td>Text Color 4:</td>
+					<td>
+						<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor4" value="737300" />
+					</td>
+				</tr>
+				<tr>
+					<td>Text Color 5:</td>
+					<td> 
+						<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor5" value="910091" />
+					</td>
+				</tr>
+				<tr>
+					<td>Border Color:</td>
+					<td>
+						<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="borderColor" value="000000" />
+					</td>
+				</tr>
+				<tr>
+					<td>Maximum Text rotation:</td>
+					<td>
+						<input class="slider" type="range" id="textRotation" min="0" max="90" step="1" value="0" />
+					</td>
+				</tr>
+			</table>
 			</form>
 		</div>
 		<div id="loadingDiv">
+			Generating word cloud...
+			<br>
+			<br>
 			<img src="img/loader.gif" alt="loading..."/>
 		</div>
 		<div id="changeDiv1">
 			<form>
-				<br>
+			<br>
 				<a id="returnToCreate" class="button" href=""><span>Create new cloud...</span></a>
 				<a id="saveButton" class="button" href=""><span>Save Image!</span></a>
 				<br>
 				<br>
-				Background Color: 
-				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="backGroundColor_page2" value="000000" />
-				<br>
+			<table>
+			<tr>
+				<td>Background Color:</td>
+				<td>
+					<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="backGroundColor_page2" value="000000" />
+				</td>
+			</tr>
+			</table>
 			</form>
 		</div>
 		<div id="maniwordlecanvas"></div>
 		<br>
 		<div id="changeDiv2">
 			<form>
-				Pin Word:
-				<input type="checkbox" id="pinCheckbox_page2" value="pin"></input>
-				<br>
-				Text Color: 
-				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor_page2" value="C20000" />
-				<br>
-				Text Font:
-				<select id="textFont_page2">
-					<option value="serif">serif</option>
-					<option value="sans-serif">sans-serif</option>
-					<option value="cursive">cursive</option>
-					<option value="fantasy">fantasy</option>
-					<option value="monospace">monospace</option>
-				</select>
-				<br>
-				Font Style: 
-				<select id="fontStyle_page2">
-					<option value="normal">normal</option>
-					<option value="italic">italic</option>
-					<option value="bold">bold</option>
-				</select>
-				<br>
-				Fill Option:
-				<select id="fillOrStroke_page2">
-					<option value="fill">Fill</option>
-					<option value="fill+stroke">Fill + Border</option>
-				</select>
-				<br>
-				Border Color:
-				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="borderColor_page2" value="000000" />
-				<br>
+			<table>
+			<tr>
+				<td>Pin Word:</td>
+				<td>
+					<input class="checkbox" type="checkbox" id="pinCheckbox_page2" value="pin"></input>
+				</td>
+			</tr>
+			<tr>
+				<td>Text Font:</td>
+				<td>
+					<select id="textFont_page2">
+						<option value="serif">serif</option>
+						<option value="sans-serif">sans-serif</option>
+						<option value="cursive">cursive</option>
+						<option value="fantasy">fantasy</option>
+						<option value="monospace">monospace</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>Font Style:</td>
+				<td>
+					<select id="fontStyle_page2">
+						<option value="normal">normal</option>
+						<option value="italic">italic</option>
+						<option value="bold">bold</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>Fill Option:</td>
+				<td>
+					<select id="fillOrStroke_page2">
+						<option value="fill">Fill</option>
+						<option value="fill+stroke">Fill + Border</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>Text Color:</td>
+				<td>
+					<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor_page2" value="C20000" />
+				</td>
+			</tr>
+			<tr>
+				<td>Border Color:</td>
+				<td>
+					<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="borderColor_page2" value="000000" />
+				</td>
+			</tr>
+			</table>	
 			</form>
 		</div>
 	</body>

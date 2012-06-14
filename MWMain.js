@@ -98,7 +98,8 @@ function MainApp()
 	function submitButtonClicked(e)
 	{
 		document.getElementById("loadingDiv").style.display = 'block';
-		document.getElementById("createDiv").style.display = 'none';
+		document.getElementById("createDiv1").style.display = 'none';
+		document.getElementById("createDiv2").style.display = 'none';
 		window.TextHandler.ReadText(window.CurrentText);
 		if(window.stage == undefined)
 		{
@@ -174,7 +175,8 @@ function MainApp()
 	{
 		document.getElementById("changeDiv1").style.display = 'none';
 		document.getElementById("changeDiv2").style.display = 'none';
-		document.getElementById("createDiv").style.display = 'block';
+		document.getElementById("createDiv1").style.display = 'block';
+		document.getElementById("createDiv2").style.display = 'block';
 		document.getElementById("maniwordlecanvas").style.display = 'none';
 	}
 	

@@ -651,8 +651,8 @@ function MWWord(word)
 			if(aWordsToCompare.length == 0)
 			{
 //				Debugger.log(this.sWord+"("+pCurrentPos.x+","+pCurrentPos.y+") : NO WORDS TO COMPARE BECAUSE OF THE BOUNDING BOX");
-				window.textlayer.add(this.textShape);
-				this.textShape.saveData();
+//				window.textlayer.add(this.textShape);
+//				this.textShape.saveData();
 				break;
 			}
 			else if(aWordsToCompare.length > 2)
@@ -665,7 +665,7 @@ function MWWord(word)
 				var oldY = pCurrentPos.y;
 				if(bRight)
 				{
-					pCurrentPos.x+=25;
+					pCurrentPos.x+=20;
 					iCount++;
 					if(iCount == iCurrentValue)
 					{
@@ -677,7 +677,7 @@ function MWWord(word)
 				}
 				else if(bDown)
 				{
-					pCurrentPos.y+=25;
+					pCurrentPos.y+=20;
 					iCount++;
 					if(iCount == iCurrentValue)
 					{
@@ -690,7 +690,7 @@ function MWWord(word)
 				}
 				else if(bLeft)
 				{
-					pCurrentPos.x-=25;
+					pCurrentPos.x-=20;
 					iCount++;
 					if(iCount == iCurrentValue)
 					{
@@ -702,7 +702,7 @@ function MWWord(word)
 				}
 				else if(bUp)
 				{
-					pCurrentPos.y-=25;
+					pCurrentPos.y-=20;
 					iCount++;
 					if(iCount == iCurrentValue)
 					{
@@ -763,7 +763,7 @@ function MWWord(word)
 						var oldY = pCurrentPos.y;
 						if(bRight)
 						{
-							pCurrentPos.x+=25;
+							pCurrentPos.x+=20;
 							iCount++;
 							if(iCount == iCurrentValue)
 							{
@@ -775,7 +775,7 @@ function MWWord(word)
 						}
 						else if(bDown)
 						{
-							pCurrentPos.y+=25;
+							pCurrentPos.y+=20;
 							iCount++;
 							if(iCount == iCurrentValue)
 							{
@@ -788,7 +788,7 @@ function MWWord(word)
 						}
 						else if(bLeft)
 						{
-							pCurrentPos.x-=25;
+							pCurrentPos.x-=20;
 							iCount++;
 							if(iCount == iCurrentValue)
 							{
@@ -800,7 +800,7 @@ function MWWord(word)
 						}
 						else if(bUp)
 						{
-							pCurrentPos.y-=25;
+							pCurrentPos.y-=20;
 							iCount++;
 							if(iCount == iCurrentValue)
 							{
@@ -898,7 +898,7 @@ function MWWord(word)
 				x: this.pPos.x,
 				y: this.pPos.y,
 				text: this.sWord,
-				fontSize: this.iCount*9,
+				fontSize: this.iCount*8,
 				fontFamily: this.sFont,
 				textFill: this.sFillColor,
 				align: "center",
@@ -914,7 +914,7 @@ function MWWord(word)
 				x: this.pPos.x,
 				y: this.pPos.y,
 				text: this.sWord,
-				fontSize: this.iCount*9,
+				fontSize: this.iCount*8,
 				fontFamily: this.sFont,
 				textFill: this.sFillColor,
 				textStroke: this.sBordercolor,
@@ -990,7 +990,7 @@ function MWWord(word)
 				x: this.pPos.x,
 				y: this.pPos.y,
 				text: this.sWord,
-				fontSize: this.iCount*9,
+				fontSize: this.iCount*8,
 				fontFamily: this.sFont,
 				textFill: this.sFillColor,
 				align: "center",
@@ -1006,7 +1006,7 @@ function MWWord(word)
 				x: this.pPos.x,
 				y: this.pPos.y,
 				text: this.sWord,
-				fontSize: this.iCount*9,
+				fontSize: this.iCount*8,
 				fontFamily: this.sFont,
 				textFill: this.sFillColor,
 				textStroke: this.sBordercolor,
