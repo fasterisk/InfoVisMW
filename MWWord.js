@@ -258,6 +258,13 @@ function MWWord(word)
 		this.iTextRotation = rotation;
 	};
 	
+	this.UpdateSelectionColor = function(color)
+	{
+		this.selectionShapeRect.setStroke(color);
+		this.selectionShapeLine.setStroke(color);
+		this.selectionShapeRotationPoint.setStroke(color);
+	};
+	
 	this.CreateDrawnPointArray = function()
 	{
 //		Debugger.log(this.sWord+": CREATE DRAWN POINT ARRAY");
@@ -764,6 +771,7 @@ function MWWord(word)
 			fontWeight: this.sFontWeight,
 			draggable: true
 		});
+		
 		//rotate text according to the rotation
 		this.textShape.setRotationDeg(this.iTextRotation);
 		

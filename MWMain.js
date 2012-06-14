@@ -191,7 +191,7 @@ function MainApp()
 	function fontWeightChanged_page2(e)
 	{
 		var target = e.target;
-		window.Canvas.SetFontWeight(target.value);
+		var word = window.TextHandler.GetSelectedWord();
 	}
 
 	function fontStyleChanged_page2(e)

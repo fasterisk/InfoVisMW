@@ -181,6 +181,11 @@ function MWCanvas(stage)
 		this.dummyrectangle.setFill(this.sBackgroundColor);
 		this.dummylayer.draw();
 		this.sSelectionColor = InverseColor(color);
+		for(var i = 0; i < this.aDrawnWords.length; i++)
+			this.aDrawnWords[i].UpdateSelectionColor(this.sSelectionColor);
+
+		window.selectionlayer.draw();
+		UpdateFancyBox();
 	};
 	
 	this.SetFont = function(font)
