@@ -128,8 +128,8 @@ function DragEndFunction(event)
 				
 				if(!aWordsAlreadyToMove[j] && aWordsToCompare[j].intersects(x,y))
 				{
-					
-					if(aWordsToCompare[j].getFontSize() > word.textShape.getFontSize())
+					var comparingWord = window.TextHandler.GetWord(aWordsToCompare[j].getName());
+					if(comparingWord.bPinned || aWordsToCompare[j].getFontSize() > word.textShape.getFontSize())
 					{
 //						Debugger.log("COLLISION of "+word.sWord+"(smaller) with " +aWordsToCompare[j].getName() + "(bigger)");
 						//move current word back, no other word is moved
@@ -282,6 +282,10 @@ function MWWord(word)
 		this.selectionShapeRotationPoint.setStroke(color);
 	};
 	
+	this.UpdatePinState = function(){
+		this.bPinned = !this.bPinned;
+	}
+	
 	this.ChangeBorderColor = function(color)
 	{
 		this.sBordercolor = color;
@@ -350,6 +354,9 @@ function MWWord(word)
 		
 		//Set interface for changing this word visible - set all options to the values of this word
 		document.getElementById("changeDiv2").style.display = 'block';
+		
+		var pinCheckboxElement = document.getElementById("pinCheckbox_page2");
+		pinCheckboxElement.checked = this.bPinned;
 		
 		var textFontElement = document.getElementById("textFont_page2");
 		switch(this.sFont){

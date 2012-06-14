@@ -85,6 +85,9 @@ function MainApp()
 	formElement = document.getElementById("borderColor_page2");
 	formElement.addEventListener('change', textFillColorChanged_page2, false);
 	
+	formElement = document.getElementById("pinCheckbox_page2");
+	formElement.addEventListener('change', pinCheckboxChanged_page2, false);
+	
 	//Eventhandler for first page
 	function textBoxChanged(e)
 	{
@@ -218,4 +221,10 @@ function MainApp()
 			break;
 		}
 	}
+	
+	function pinCheckboxChanged_page2(e)
+	{
+		var word = window.TextHandler.GetSelectedWord();
+		word.UpdatePinState();
+	};
 }
