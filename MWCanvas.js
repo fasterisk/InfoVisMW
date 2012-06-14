@@ -18,14 +18,20 @@ function MWCanvas(stage)
 	this.sFillColor3 = "#00008C";
 	this.sFillColor4 = "#737300";
 	this.sFillColor5 = "#910091";
-	this.sFontWeight = "normal";
+	this.sBordercolor = "#000000";
 	this.sFontStyle = "normal";
 	this.iTextRotation = 0;
 	
 	this.aDrawnWords = new Array();
 	this.aToDrawList = new Array();
 	
-	this.dummyrectangle;
+	this.dummyrectangle = new Kinetic.Rect({
+		x: 0,
+		y: 0,
+		fill: this.sBackgroundColor,
+		width: 800,
+		height: 600
+	});
 	
 	this.Draw = function()
 	{
@@ -118,8 +124,8 @@ function MWCanvas(stage)
 			aWordList[i].ChangeFont(this.sFont);
 			aWordList[i].ChangeFillOrStroke(this.sFillOrStroke);
 			aWordList[i].ChangeFillColor(this.sFillColor);
-			aWordList[i].ChangeFontWeight(this.sFontWeight);
 			aWordList[i].ChangeFontStyle(this.sFontStyle);
+			aWordList[i].ChangeBorderColor(this.sBordercolor);
 			if(i%2 == 0)
 				aWordList[i].ChangeRotation(this.iTextRotation);
 			else
@@ -150,6 +156,7 @@ function MWCanvas(stage)
 		this.sFillOrStroke = fillOrStroke;
 	};
 	
+	
 	this.SetFillColor = function(id, fillcolor)
 	{
 		switch(id)
@@ -168,6 +175,9 @@ function MWCanvas(stage)
 			break;
 		case 5:
 			this.sFillColor5 = fillcolor;
+			break;
+		case 6:
+			this.sBordercolor = fillcolor;
 			break;
 		default:
 			this.sFillColor1 = fillcolor;
@@ -191,11 +201,6 @@ function MWCanvas(stage)
 	this.SetFont = function(font)
 	{
 		this.sFont = font;
-	};
-	
-	this.SetFontWeight = function(fontweight)
-	{
-		this.sFontWeight = fontweight;
 	};
 	
 	this.SetFontStyle = function(fontstyle)

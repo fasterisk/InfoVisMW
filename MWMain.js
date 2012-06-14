@@ -53,12 +53,11 @@ function MainApp()
 	formElement.addEventListener('change', textFillColorChanged, false);
 	formElement = document.getElementById("textFillColor5");
 	formElement.addEventListener('change', textFillColorChanged, false);
+	formElement = document.getElementById("borderColor");
+	formElement.addEventListener('change', textFillColorChanged, false);
 
 	formElement = document.getElementById("textFont");
 	formElement.addEventListener('change', textFontChanged, false);
-
-	formElement = document.getElementById("fontWeight");
-	formElement.addEventListener('change', fontWeightChanged, false);
 
 	formElement = document.getElementById("fontStyle");
 	formElement.addEventListener('change', fontStyleChanged, false);
@@ -73,9 +72,6 @@ function MainApp()
 	formElement = document.getElementById("textFont_page2");
 	formElement.addEventListener('change', textFontChanged_page2, false);
 	
-	formElement = document.getElementById("fontWeight_page2");
-	formElement.addEventListener('change', fontWeightChanged_page2, false);
-
 	formElement = document.getElementById("fontStyle_page2");
 	formElement.addEventListener('change', fontStyleChanged_page2, false);
 	
@@ -85,6 +81,8 @@ function MainApp()
 	formElement = document.getElementById("backGroundColor_page2");
 	formElement.addEventListener('change', textFillColorChanged_page2, false);
 	formElement = document.getElementById("textFillColor_page2");
+	formElement.addEventListener('change', textFillColorChanged_page2, false);
+	formElement = document.getElementById("borderColor_page2");
 	formElement.addEventListener('change', textFillColorChanged_page2, false);
 	
 	//Eventhandler for first page
@@ -116,12 +114,6 @@ function MainApp()
 	{
 		var target = e.target;
 		window.Canvas.SetFont(target.value);
-	}
-
-	function fontWeightChanged(e)
-	{
-		var target = e.target;
-		window.Canvas.SetFontWeight(target.value);
 	}
 
 	function fontStyleChanged(e)
@@ -159,6 +151,9 @@ function MainApp()
 		case "textFillColor5":
 			window.Canvas.SetFillColor(5, "#" + target.value);
 			break;
+		case "borderColor":
+			window.Canvas.SetFillColor(6, "#" + target.value);
+			break;
 		}
 		
 	}
@@ -188,22 +183,20 @@ function MainApp()
 		word.UpdateDrawing(true);
 	}
 
-	function fontWeightChanged_page2(e)
-	{
-		var target = e.target;
-		var word = window.TextHandler.GetSelectedWord();
-	}
-
 	function fontStyleChanged_page2(e)
 	{
 		var target = e.target;
-		window.Canvas.SetFontStyle(target.value);
+		var word = window.TextHandler.GetSelectedWord();
+		word.ChangeFontStyle(target.value);
+		word.UpdateDrawing(true);
 	}
 	
 	function fillOrStrokeChanged_page2(e)
 	{
 		var target = e.target;
-		window.Canvas.SetFillOrStroke(target.value);
+		var word = window.TextHandler.GetSelectedWord();
+		word.ChangeFillOrStroke(target.value);
+		word.UpdateDrawing(true);
 	}
 	
 	function textFillColorChanged_page2(e)
@@ -217,6 +210,10 @@ function MainApp()
 			break;
 		case "textFillColor_page2":
 			word.ChangeFillColor("#" + target.value);
+			word.UpdateDrawing(false);
+			break;
+		case "borderColor_page2":
+			word.ChangeBorderColor("#" + target.value);
 			word.UpdateDrawing(false);
 			break;
 		}

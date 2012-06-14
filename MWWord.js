@@ -197,7 +197,7 @@ function MWWord(word)
 	
 	this.sFont = "serif";
 	this.sFillColor = "ff0000";
-	this.sFontWeight = "bold";
+	this.sBordercolor = "000000";
 	this.sFontStyle = "normal";
 	this.sFillOrStroke = "fill";
 	this.iTextRotation = 0;
@@ -242,11 +242,6 @@ function MWWord(word)
 		this.sFillColor = fillcolor;
 	};
 	
-	this.ChangeFontWeight = function(fontweight)
-	{
-		this.sFontWeight = fontweight;
-	};
-	
 	this.ChangeFontStyle = function(fontstyle)
 	{
 		this.sFontStyle = fontstyle;
@@ -263,6 +258,11 @@ function MWWord(word)
 		this.selectionShapeRect.setStroke(color);
 		this.selectionShapeLine.setStroke(color);
 		this.selectionShapeRotationPoint.setStroke(color);
+	};
+	
+	this.ChangeBorderColor = function(color)
+	{
+		this.sBordercolor = color;
 	};
 	
 	this.CreateDrawnPointArray = function()
@@ -322,7 +322,9 @@ function MWWord(word)
 //		document.getElementById("fontWeight_page2")
 //		document.getElementById("fontStyle_page2")
 //		document.getElementById("fillOrStroke_page2")
+		
 		document.getElementById('textFillColor_page2').color.fromString(this.sFillColor.substring(1, 7));
+		document.getElementById('borderColor_page2').color.fromString(this.sBordercolor.substring(1, 7));
 		
 		
 		if(!this.bSelected)
@@ -688,20 +690,41 @@ function MWWord(word)
 		this.pPos.y = stageHeight / 2;
 		
 		//create textshape
-		this.textShape = new Kinetic.Text({
-			name: this.sWord,
-			x: this.pPos.x,
-			y: this.pPos.y,
-			text: this.sWord,
-			fontSize: this.iCount*10,
-			fontFamily: this.sFont,
-			textFill: this.sFillColor,
-			align: "center",
-			verticalAlign: "middle",
-			fontStyle: this.sFontStyle,
-			fontWeight: this.sFontWeight,
-			draggable: true
-		});
+		
+		if(this.sFillOrStroke == "fill")
+		{
+			this.textShape = new Kinetic.Text({
+				name: this.sWord,
+				x: this.pPos.x,
+				y: this.pPos.y,
+				text: this.sWord,
+				fontSize: this.iCount*10,
+				fontFamily: this.sFont,
+				textFill: this.sFillColor,
+				align: "center",
+				verticalAlign: "middle",
+				fontStyle: this.sFontStyle,
+				draggable: true
+			});
+		}
+		else
+		{
+			this.textShape = new Kinetic.Text({
+				name: this.sWord,
+				x: this.pPos.x,
+				y: this.pPos.y,
+				text: this.sWord,
+				fontSize: this.iCount*10,
+				fontFamily: this.sFont,
+				textFill: this.sFillColor,
+				textStroke: this.sBordercolor,
+				textStrokeWidth: 1,
+				align: "center",
+				verticalAlign: "middle",
+				fontStyle: this.sFontStyle,
+				draggable: true
+			});
+		}
 		
 		//rotate text according to the rotation
 		this.textShape.setRotationDeg(this.iTextRotation);
@@ -757,20 +780,40 @@ function MWWord(word)
 		window.textlayer.remove(this.textShape);
 		
 		//create textshape with actual parameters
-		this.textShape = new Kinetic.Text({
-			name: this.sWord,
-			x: this.pPos.x,
-			y: this.pPos.y,
-			text: this.sWord,
-			fontSize: this.iCount*10,
-			fontFamily: this.sFont,
-			textFill: this.sFillColor,
-			align: "center",
-			verticalAlign: "middle",
-			fontStyle: this.sFontStyle,
-			fontWeight: this.sFontWeight,
-			draggable: true
-		});
+		if(this.sFillOrStroke == "fill")
+		{
+			this.textShape = new Kinetic.Text({
+				name: this.sWord,
+				x: this.pPos.x,
+				y: this.pPos.y,
+				text: this.sWord,
+				fontSize: this.iCount*10,
+				fontFamily: this.sFont,
+				textFill: this.sFillColor,
+				align: "center",
+				verticalAlign: "middle",
+				fontStyle: this.sFontStyle,
+				draggable: true
+			});
+		}
+		else
+		{
+			this.textShape = new Kinetic.Text({
+				name: this.sWord,
+				x: this.pPos.x,
+				y: this.pPos.y,
+				text: this.sWord,
+				fontSize: this.iCount*10,
+				fontFamily: this.sFont,
+				textFill: this.sFillColor,
+				textStroke: this.sBordercolor,
+				textStrokeWidth: 1,
+				align: "center",
+				verticalAlign: "middle",
+				fontStyle: this.sFontStyle,
+				draggable: true
+			});
+		}
 		
 		//rotate text according to the rotation
 		this.textShape.setRotationDeg(this.iTextRotation);
