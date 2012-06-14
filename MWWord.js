@@ -1,8 +1,18 @@
+/**
+ * A point structure
+ * @param x
+ * @param y
+ * @returns
+ */
 function POINT(x,y){
 	this.x = x;
 	this.y = y;
 }
 
+/**
+ * Eventhandler when a word gets dragged - stores some current positions that later may have to be restored
+ * @param event
+ */
 function DragStartFunction(event)
 {
 	var word = window.TextHandler.GetWord(event.shape.getName());
@@ -14,6 +24,9 @@ function DragStartFunction(event)
 	word.pStart.y = word.pPos.y;
 }
 
+/**
+ * Eventhandler when a word is dragged - some offsets are calculated, all other words get new alpha values
+ */
 function DragMoveFunction(event)
 {
 	var word = window.TextHandler.GetWord(event.shape.getName());
@@ -43,6 +56,10 @@ function DragMoveFunction(event)
 	window.textlayer.draw();
 }
 
+/**
+ * Eventhandler when a word is dropped - also called when rotation is ending
+ * @param event
+ */
 function DragEndFunction(event)
 {
 	var word = window.TextHandler.GetWord(event.shape.getName());
@@ -188,6 +205,11 @@ function DragEndFunction(event)
 	
 }
 
+/**
+ * constructor
+ * @param word
+ * @returns
+ */
 function MWWord(word) 
 {
 	this.sWord = word;
@@ -265,6 +287,9 @@ function MWWord(word)
 		this.sBordercolor = color;
 	};
 	
+	/**
+	 * create the array of the pixels of this word - update the boundingbox
+	 */
 	this.CreateDrawnPointArray = function()
 	{
 //		Debugger.log(this.sWord+": CREATE DRAWN POINT ARRAY");
@@ -300,6 +325,10 @@ function MWWord(word)
 		this.pDrawnPointsOffset = new POINT(0,0);
 	};
 	
+	
+	/**
+	 * Unselect this word
+	 */
 	this.Unselect = function()
 	{
 //		Debugger.log(this.sWord+": UNSELECT");
@@ -312,16 +341,57 @@ function MWWord(word)
 		this.bSelected = false;
 	};
 	
+	/**
+	 * Select this word, this function is called when this word gets selected with a mouseclick
+	 */
 	this.Select = function()
 	{
 //		Debugger.log(this.sWord+": SELECT");
+		
 		//Set interface for changing this word visible - set all options to the values of this word
 		document.getElementById("changeDiv2").style.display = 'block';
 		
-//		document.getElementById("textFont_page2")
-//		document.getElementById("fontWeight_page2")
-//		document.getElementById("fontStyle_page2")
-//		document.getElementById("fillOrStroke_page2")
+		var textFontElement = document.getElementById("textFont_page2");
+		switch(this.sFont){
+		case "serif":
+			textFontElement.selectedIndex = 0;
+			break;
+		case "sans-serif":
+			textFontElement.selectedIndex = 1;
+			break;
+		case "cursive":
+			textFontElement.selectedIndex = 2;
+			break;
+		case "fantasy":
+			textFontElement.selectedIndex = 3;
+			break;
+		case "monospace":
+			textFontElement.selectedIndex = 4;
+			break;
+		}
+		
+		var fontStyleElement = document.getElementById("fontStyle_page2");
+		switch(this.sFontStyle){
+		case "normal":
+			fontStyleElement.selectedIndex = 0;
+			break;
+		case "italic":
+			fontStyleElement.selectedIndex = 1;
+			break;
+		case "bold":
+			fontStyleElement.selectedIndex = 2;
+			break;
+		}
+		
+		var fillOrStrokeElement = document.getElementById("fillOrStroke_page2");
+		switch(this.sFillOrStroke){
+		case "fill":
+			fillOrStrokeElement.selectedIndex = 0;
+			break;
+		case "fill+stroke":
+			fillOrStrokeElement.selectedIndex = 1;
+			break;
+		}
 		
 		document.getElementById('textFillColor_page2').color.fromString(this.sFillColor.substring(1, 7));
 		document.getElementById('borderColor_page2').color.fromString(this.sBordercolor.substring(1, 7));
@@ -329,6 +399,7 @@ function MWWord(word)
 		
 		if(!this.bSelected)
 		{
+			//add the selection shapes to the selectionlayer so that they are visible
 			window.selectionlayer.add(this.selectionShapeRect);
 			window.selectionlayer.add(this.selectionShapeLine);
 			window.selectionlayer.add(this.selectionShapeRotationPoint);
@@ -336,6 +407,9 @@ function MWWord(word)
 		this.bSelected = true;
 	};
 	
+	/**
+	 * Updates the position of this word (including its textshape-object)
+	 */
 	this.UpdatePosition = function(shape)
 	{
 //		Debugger.log(this.sWord+": UPDATE POSITION");
@@ -349,6 +423,10 @@ function MWWord(word)
 		window.textlayer.draw();
 	};
 	
+	/**
+	 * Updates the selection shape of this word - position, width, height, color and rotation
+	 * Creates a Rectangle and a Rotationpoint and a line connecting them
+	 */
 	this.UpdateSelectionShape = function()
 	{
 //		Debugger.log(this.sWord+": UPDATE SELECTION SHAPE");
@@ -357,7 +435,7 @@ function MWWord(word)
 		if(this.bSelected)
 			this.Unselect();
 		
-		//create selection shape
+		//create selection shape rect
 		var selectionShapeRect = new Kinetic.Rect({
 			name: this.sWord,
 			x: this.pPos.x,
@@ -370,6 +448,8 @@ function MWWord(word)
 			draggable: true
 		});
 		this.selectionShapeRect = selectionShapeRect;
+		
+		//add eventlistener to the selectionshaperect - the same as when dragging a word
 		this.selectionShapeRect.on("dragstart", function(event) {
 			DragStartFunction(event);
 		});
@@ -387,6 +467,7 @@ function MWWord(word)
 			document.body.style.cursor = "default";
 		});
 		
+		//create selection shape line
 		var selectionShapeLine = new Kinetic.Line({
 			name: this.sWord,
 			points: [this.pPos.x + this.textShape.getTextHeight()/2*Math.sin(this.iTextRotation*Math.PI/180), this.pPos.y - this.textShape.getTextHeight()/2*Math.cos(this.iTextRotation*Math.PI/180),
@@ -396,8 +477,9 @@ function MWWord(word)
 			lineCap: "round",
 			lineJoin: "round"
 		});
-
 		this.selectionShapeLine = selectionShapeLine;
+		
+		//create selection shape rotation point
 		var selectionShapeRotationPoint = new Kinetic.Circle({
 			name: this.sWord,
 			x: this.pPos.x + this.textShape.getTextHeight()/2*Math.sin(this.iTextRotation*Math.PI/180)+20*Math.sin(this.iTextRotation*Math.PI/180),
@@ -410,7 +492,7 @@ function MWWord(word)
 		});
 		this.selectionShapeRotationPoint = selectionShapeRotationPoint;
 		
-		//rotate the selection shape
+		//rotate the selection shape rect - the rotation of the other two are calculated at creation
 		this.selectionShapeRect.setRotationDeg(this.iTextRotation);
 		
 		//add event handler for the rotation point
@@ -455,7 +537,6 @@ function MWWord(word)
 			
 			word.selectionShapeRotationPoint.saveData();
 		});
-		
 		this.selectionShapeRotationPoint.on("dragend", function(event){
 			DragEndFunction(event);
 			UpdateFancyBox();
@@ -473,6 +554,11 @@ function MWWord(word)
 		window.selectionlayer.draw();
 	};
 	
+	/**
+	 * Searches for a new position for the current word
+	 *  - because it is moved when a bigger word gets dropped at its position
+	 *  - or at the creation of the word cloud
+	 */
 	this.MoveToNewPosition = function()
 	{
 //		Debugger.log(this.sWord+": MOVE TO NEW POSITION");
@@ -516,6 +602,7 @@ function MWWord(word)
 				break;
 			}
 			
+			//get an array of the words that need to be compared because of the collision of their bounding boxes
 			var aWordsToCompare = new Array();
 			for(var i = 0; i < layerChildren.length; i++)
 			{
@@ -540,14 +627,14 @@ function MWWord(word)
 			
 			bCollisionDetected = false;
 			bCanBeDrawn = true;
-			//go through all the points of the current text and look if it collides with a point at the layer
+			//go through all the pixels of the current text and look if it collides with a pixel at the layer
 			for(var i = 0; i < this.aDrawnPoints.length; i++)
 			{
 				
 				if(bCollisionDetected)
 					break;
 
-				//get current point
+				//get current pixel
 				var x = this.aDrawnPoints[i].x;
 				var y = this.aDrawnPoints[i].y;
 				
@@ -643,6 +730,7 @@ function MWWord(word)
 			this.textShape.saveData();
 		}
 		
+		//update position of the word and its drawnpoints and the bounding box
 		this.pPos.x = pCurrentPos.x;
 		this.pPos.y = pCurrentPos.y;
 		
@@ -652,7 +740,7 @@ function MWWord(word)
 		this.pDrawnPointsOffset.y = 0;
 		this.BoundingBox.setOffset(0, 0);
 		
-		//LUXURY - transition
+		//move the shape back to the startposition and make a nice transition to the new position
 		this.textShape.setX(this.pStart.x);
 		this.textShape.setY(this.pStart.y);
 
@@ -681,6 +769,10 @@ function MWWord(word)
 		window.textlayer.draw();
 	};
 	
+	/**
+	 * Draws this word
+	 * Only called at creation of the word cloud
+	 */
 	this.Draw = function(stageWidth, stageHeight, aDrawnWords)
 	{
 //		Debugger.log(this.sWord+": DRAWING");
@@ -690,7 +782,6 @@ function MWWord(word)
 		this.pPos.y = stageHeight / 2;
 		
 		//create textshape
-		
 		if(this.sFillOrStroke == "fill")
 		{
 			this.textShape = new Kinetic.Text({
@@ -775,6 +866,9 @@ function MWWord(word)
 		
 	};
 	
+	/**
+	 * Updates the drawing of the word - no change in position, only in its parameters like color etc.
+	 */
 	this.UpdateDrawing = function(updatedrawnpointsarray)
 	{
 		window.textlayer.remove(this.textShape);
@@ -851,6 +945,7 @@ function MWWord(word)
 			window.selectionlayer.draw();
 		});
 		
+		//create the drawn point array again if the shape of the text is changed
 		if(updatedrawnpointsarray)
 		{
 			this.CreateDrawnPointArray();
