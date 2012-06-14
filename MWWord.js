@@ -734,9 +734,18 @@ function MWWord(word)
 				if(bCollisionDetected)
 					break;
 
+				var index;
+				if(i%2 == 0)
+				{
+					index = i;
+				}
+				else
+				{
+					index = this.aDrawnPoints.length - i;
+				}
 				//get current pixel
-				var x = this.aDrawnPoints[i].x;
-				var y = this.aDrawnPoints[i].y;
+				var x = this.aDrawnPoints[index].x;
+				var y = this.aDrawnPoints[index].y;
 				
 				//go through all children for collision detection
 				for(var j = 0; j < aWordsToCompare.length; j++)
@@ -889,7 +898,7 @@ function MWWord(word)
 				x: this.pPos.x,
 				y: this.pPos.y,
 				text: this.sWord,
-				fontSize: this.iCount*10,
+				fontSize: this.iCount*9,
 				fontFamily: this.sFont,
 				textFill: this.sFillColor,
 				align: "center",
@@ -905,7 +914,7 @@ function MWWord(word)
 				x: this.pPos.x,
 				y: this.pPos.y,
 				text: this.sWord,
-				fontSize: this.iCount*10,
+				fontSize: this.iCount*9,
 				fontFamily: this.sFont,
 				textFill: this.sFillColor,
 				textStroke: this.sBordercolor,
@@ -981,7 +990,7 @@ function MWWord(word)
 				x: this.pPos.x,
 				y: this.pPos.y,
 				text: this.sWord,
-				fontSize: this.iCount*10,
+				fontSize: this.iCount*9,
 				fontFamily: this.sFont,
 				textFill: this.sFillColor,
 				align: "center",
@@ -997,7 +1006,7 @@ function MWWord(word)
 				x: this.pPos.x,
 				y: this.pPos.y,
 				text: this.sWord,
-				fontSize: this.iCount*10,
+				fontSize: this.iCount*9,
 				fontFamily: this.sFont,
 				textFill: this.sFillColor,
 				textStroke: this.sBordercolor,
