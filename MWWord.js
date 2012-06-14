@@ -206,6 +206,22 @@ function DragEndFunction(event)
 }
 
 /**
+ * Deletes a word - occurs when entf/del is pressed
+ */
+var RemoveListener = function(event)
+{
+	if(event.keyCode == 46)
+	{
+		var word = window.TextHandler.GetSelectedWord();
+		word.Unselect();
+		window.TextHandler.SelectWord(undefined);
+		window.selectionlayer.draw();
+		window.textlayer.remove(word.textShape);
+		window.textlayer.draw();
+	}
+};
+
+/**
  * constructor
  * @param word
  * @returns
@@ -284,7 +300,7 @@ function MWWord(word)
 	
 	this.UpdatePinState = function(){
 		this.bPinned = !this.bPinned;
-	}
+	};
 	
 	this.ChangeBorderColor = function(color)
 	{
@@ -329,21 +345,6 @@ function MWWord(word)
 		this.pDrawnPointsOffset = new POINT(0,0);
 	};
 	
-	
-	/**
-	 * Unselect this word
-	 */
-	this.Unselect = function()
-	{
-//		Debugger.log(this.sWord+": UNSELECT");
-		if(this.bSelected)
-		{
-			window.selectionlayer.remove(this.selectionShapeRect);
-			window.selectionlayer.remove(this.selectionShapeLine);
-			window.selectionlayer.remove(this.selectionShapeRotationPoint);
-		}
-		this.bSelected = false;
-	};
 	
 	/**
 	 * Select this word, this function is called when this word gets selected with a mouseclick
@@ -404,14 +405,35 @@ function MWWord(word)
 		document.getElementById('borderColor_page2').color.fromString(this.sBordercolor.substring(1, 7));
 		
 		
+		
 		if(!this.bSelected)
 		{
 			//add the selection shapes to the selectionlayer so that they are visible
 			window.selectionlayer.add(this.selectionShapeRect);
 			window.selectionlayer.add(this.selectionShapeLine);
 			window.selectionlayer.add(this.selectionShapeRotationPoint);
+			
+			//add eventhandler for the event "entf"-pressed
+			window.addEventListener('keydown', RemoveListener, false);
 		}
 		this.bSelected = true;
+	};
+	
+	/**
+	 * Unselect this word
+	 */
+	this.Unselect = function()
+	{
+//		Debugger.log(this.sWord+": UNSELECT");
+		if(this.bSelected)
+		{
+			document.getElementById("changeDiv2").style.display = 'none';
+			window.selectionlayer.remove(this.selectionShapeRect);
+			window.selectionlayer.remove(this.selectionShapeLine);
+			window.selectionlayer.remove(this.selectionShapeRotationPoint);
+			window.removeEventListener('keydown', RemoveListener, false);
+		}
+		this.bSelected = false;
 	};
 	
 	/**
