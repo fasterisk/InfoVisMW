@@ -25,6 +25,8 @@ function MWCanvas(stage)
 	this.aDrawnWords = new Array();
 	this.aToDrawList = new Array();
 	
+	this.dummyrectangle;
+	
 	this.Draw = function()
 	{
 		
@@ -176,8 +178,9 @@ function MWCanvas(stage)
 	this.SetBackGroundColor = function(color)
 	{
 		this.sBackgroundColor = color;
+		this.dummyrectangle.setFill(this.sBackgroundColor);
+		this.dummylayer.draw();
 		this.sSelectionColor = InverseColor(color);
-		Debugger.log(this.sSelectionColor);
 	};
 	
 	this.SetFont = function(font)
@@ -207,14 +210,15 @@ function MWCanvas(stage)
 	
 	this.DrawDummyRectangle = function()
 	{
-		var rectangle = new Kinetic.Rect({
+		
+		this.dummyrectangle = new Kinetic.Rect({
 			x: 0,
 			y: 0,
 			fill: this.sBackgroundColor,
 			width: 800,
 			height: 600
 		});
-		this.dummylayer.add(rectangle);
+		this.dummylayer.add(this.dummyrectangle);
 		this.dummylayer.draw();
 	};
 }
