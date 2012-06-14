@@ -19,16 +19,6 @@
 		<script src="MWMain.js"></script>
 	</head>
 	<body>
-		<div id="loadingDiv">
-			<img src="img/loader.gif" alt="loading..."/>
-		</div>
-		<div id="maniwordlecanvas"></div>
-		<div id="changeDiv">
-			<form>
-				<button id="returnToCreate" type="button">Return</button>
-				<a id="saveButton" class="button" href=""><span>Save Image!</span></a>
-			</form>
-		</div>
 		<div id="createDiv">
 			Welcome to ManiWordle! bla bla bla bla
 			<form>
@@ -38,12 +28,6 @@
 				<a id="textSubmitButton" class="button" href="#"><span>Submit text!</span></a>
 				<br>
 				<br>
-				FillOrStroke:
-				<select id="fillOrStroke">
-					<option value="fill">Fill</option>
-					<option value="fill+stroke">Fill + Border</option>
-				</select>
-				<br>
 				Text Font:
 				<select id="textFont">
 					<option value="serif">serif</option>
@@ -52,27 +36,6 @@
 					<option value="fantasy">fantasy</option>
 					<option value="monospace">monospace</option>
 				</select>
-				<br>
-				Maximum Text rotation:
-				<input type="range" id="textRotation" min="0" max="90" step="1" value="0" />
-				<br>
-				Backgroundcolor: 
-				<input class="color" id="backGroundColor" value="000000" />
-				<br>
-				Text Color 1: 
-				<input class="color" id="textFillColor1" value="C20000" />
-				<br>
-				Text Color 2: 
-				<input class="color" id="textFillColor2" value="00AD00" />
-				<br>
-				Text Color 3: 
-				<input class="color" id="textFillColor3" value="00008C" />
-				<br>
-				Text Color 4: 
-				<input class="color" id="textFillColor4" value="737300" />
-				<br>
-				Text Color 5: 
-				<input class="color" id="textFillColor5" value="910091" />
 				<br>
 				Font Weight: 
 				<select id="fontWeight">
@@ -87,6 +50,86 @@
 					<option value="normal">normal</option>
 					<option value="italic">italic</option>
 					<option value="oblique">oblique</option>
+				</select>
+				<br>
+				Fill Option:
+				<select id="fillOrStroke">
+					<option value="fill">Fill</option>
+					<option value="fill+stroke">Fill + Border</option>
+				</select>
+				<br>
+				Background Color: 
+				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="backGroundColor" value="000000" />
+				<br>
+				Text Color 1: 
+				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor1" value="C20000" />
+				<br>
+				Text Color 2: 
+				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor2" value="00AD00" />
+				<br>
+				Text Color 3: 
+				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor3" value="00008C" />
+				<br>
+				Text Color 4: 
+				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor4" value="737300" />
+				<br>
+				Text Color 5: 
+				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor5" value="910091" />
+				<br>
+				Maximum Text rotation:
+				<input type="range" id="textRotation" min="0" max="90" step="1" value="0" />
+			</form>
+		</div>
+		<div id="loadingDiv">
+			<img src="img/loader.gif" alt="loading..."/>
+		</div>
+		<div id="maniwordlecanvas"></div>
+		<div id="changeDiv1">
+			<form>
+				<br>
+				<a id="returnToCreate" class="button" href=""><span>Create new cloud...</span></a>
+				<a id="saveButton" class="button" href=""><span>Save Image!</span></a>
+				<br>
+				<br>
+				Background Color: 
+				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="backGroundColor_page2" value="000000" />
+				<br>
+			</form>
+		</div>
+		<br>
+		<div id="changeDiv2">
+			<form>
+				Text Color: 
+				<input class="color {pickerFaceColor:'transparent',pickerFace:3,pickerBorder:0,pickerInsetColor:'black'}" id="textFillColor_page2" value="C20000" />
+				<br>
+				Text Font:
+				<select id="textFont_page2" name="textFont_page2_options">
+					<option value="serif">serif</option>
+					<option value="sans-serif">sans-serif</option>
+					<option value="cursive">cursive</option>
+					<option value="fantasy">fantasy</option>
+					<option value="monospace">monospace</option>
+				</select>
+				<br>
+				Font Weight: 
+				<select id="fontWeight_page2" name="fontWeight_page2_options">
+					<option value="normal">normal</option>
+					<option value="bold">bold</option>
+					<option value="bolder">bolder</option>
+					<option value="lighter">lighter</option>
+				</select>
+				<br>
+				Font Style: 
+				<select id="fontStyle_page2" name="fontStyle_page2_options">
+					<option value="normal">normal</option>
+					<option value="italic">italic</option>
+					<option value="oblique">oblique</option>
+				</select>
+				<br>
+				Fill Option:
+				<select id="fillOrStroke_page2" name="fillOrStroke_page2_options">
+					<option value="fill">Fill</option>
+					<option value="fill+stroke">Fill + Border</option>
 				</select>
 			</form>
 		</div>

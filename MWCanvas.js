@@ -77,7 +77,10 @@ function MWCanvas(stage)
 				
 				window.TextHandler.SelectWord(undefined);
 				window.selectionlayer.draw();
+				document.getElementById("changeDiv2").style.display = 'none';
 			}
+			
+			UpdateFancyBox();
 		});
 		
 		window.Canvas.DrawNextWord(0);
@@ -99,7 +102,7 @@ function MWCanvas(stage)
 		{
 			document.getElementById("loadingDiv").style.display = 'none';
 			document.getElementById("maniwordlecanvas").style.display = 'block';
-			document.getElementById("changeDiv").style.display = 'block';
+			document.getElementById("changeDiv1").style.display = 'block';
 			UpdateFancyBox();
 		}
 			

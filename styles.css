@@ -25,6 +25,22 @@ canvas {
 	text-align:center;
 	color: #444;
 }
+
+#changeDiv1{
+	font: normal 12px arial, sans-serif;
+	margin-left: auto;
+	margin-right: auto;
+	text-align:center;
+	color: #444;
+}
+
+#changeDiv2{
+	font: normal 12px arial, sans-serif;
+	margin-left: auto;
+	margin-right: auto;
+	text-align:center;
+	color: #444;
+}
 	
 a.button {
     background: transparent url('img/bg_button_a.gif') no-repeat scroll top right;

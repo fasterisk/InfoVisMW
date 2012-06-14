@@ -3,7 +3,8 @@ window.addEventListener('load', eventWindowLoaded, false);
 function eventWindowLoaded()
 {
 	//hide interface for second page
-	document.getElementById("changeDiv").style.display = 'none';
+	document.getElementById("changeDiv1").style.display = 'none';
+	document.getElementById("changeDiv2").style.display = 'none';
 	document.getElementById("maniwordlecanvas").style.display = 'none';
 	document.getElementById("loadingDiv").style.display = 'none';
 	
@@ -67,7 +68,24 @@ function MainApp()
 	
 	//Add eventlistener for second page
 	formElement = document.getElementById("returnToCreate");
-	formElement.addEventListener('click', returnButtonClicked, false);
+	formElement.addEventListener('click', returnButtonClicked_page2, false);
+	
+	formElement = document.getElementById("textFont_page2");
+	formElement.addEventListener('change', textFontChanged_page2, false);
+	
+	formElement = document.getElementById("fontWeight_page2");
+	formElement.addEventListener('change', fontWeightChanged_page2, false);
+
+	formElement = document.getElementById("fontStyle_page2");
+	formElement.addEventListener('change', fontStyleChanged_page2, false);
+	
+	formElement = document.getElementById("fillOrStroke_page2");
+	formElement.addEventListener('change', fillOrStrokeChanged_page2, false);
+	
+	formElement = document.getElementById("backGroundColor_page2");
+	formElement.addEventListener('change', textFillColorChanged_page2, false);
+	formElement = document.getElementById("textFillColor_page2");
+	formElement.addEventListener('change', textFillColorChanged_page2, false);
 	
 	//Eventhandler for first page
 	function textBoxChanged(e)
@@ -94,6 +112,24 @@ function MainApp()
 		window.Canvas.Draw();
 	}
 
+	function textFontChanged(e)
+	{
+		var target = e.target;
+		window.Canvas.SetFont(target.value);
+	}
+
+	function fontWeightChanged(e)
+	{
+		var target = e.target;
+		window.Canvas.SetFontWeight(target.value);
+	}
+
+	function fontStyleChanged(e)
+	{
+		var target = e.target;
+		window.Canvas.SetFontStyle(target.value);
+	}
+	
 	function fillOrStrokeChanged(e)
 	{
 		var target = e.target;
@@ -126,24 +162,6 @@ function MainApp()
 		}
 		
 	}
-
-	function textFontChanged(e)
-	{
-		var target = e.target;
-		window.Canvas.SetFont(target.value);
-	}
-
-	function fontWeightChanged(e)
-	{
-		var target = e.target;
-		window.Canvas.SetFontWeight(target.value);
-	}
-
-	function fontStyleChanged(e)
-	{
-		var target = e.target;
-		window.Canvas.SetFontStyle(target.value);
-	}
 	
 	function textRotationChanged(e)
 	{
@@ -151,12 +169,56 @@ function MainApp()
 		window.Canvas.SetTextRotation(target.value);
 	}
 	
-	//event handler for second page
-	function returnButtonClicked(e)
+	/*
+	 * event handler for second page
+	 */
+	function returnButtonClicked_page2(e)
 	{
-		document.getElementById("changeDiv").style.display = 'none';
+		document.getElementById("changeDiv1").style.display = 'none';
+		document.getElementById("changeDiv2").style.display = 'none';
 		document.getElementById("createDiv").style.display = 'block';
 		document.getElementById("maniwordlecanvas").style.display = 'none';
 	}
 	
+	function textFontChanged_page2(e)
+	{
+		var target = e.target;
+		var word = window.TextHandler.GetSelectedWord();
+		word.ChangeFont(target.value);
+		word.UpdateDrawing();
+	}
+
+	function fontWeightChanged_page2(e)
+	{
+		var target = e.target;
+		window.Canvas.SetFontWeight(target.value);
+	}
+
+	function fontStyleChanged_page2(e)
+	{
+		var target = e.target;
+		window.Canvas.SetFontStyle(target.value);
+	}
+	
+	function fillOrStrokeChanged_page2(e)
+	{
+		var target = e.target;
+		window.Canvas.SetFillOrStroke(target.value);
+	}
+	
+	function textFillColorChanged_page2(e)
+	{
+		var target = e.target;
+		var word = window.TextHandler.GetSelectedWord();
+		switch(target.id)
+		{
+		case "backGroundColor_page2":
+			window.Canvas.SetBackGroundColor("#" + target.value);
+			break;
+		case "textFillColor_page2":
+			word.ChangeFillColor("#" + target.value);
+			word.UpdateDrawing();
+			break;
+		}
+	}
 }

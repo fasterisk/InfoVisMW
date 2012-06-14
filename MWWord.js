@@ -308,6 +308,16 @@ function MWWord(word)
 	this.Select = function()
 	{
 //		Debugger.log(this.sWord+": SELECT");
+		//Set interface for changing this word visible - set all options to the values of this word
+		document.getElementById("changeDiv2").style.display = 'block';
+		
+//		document.getElementById("textFont_page2")
+//		document.getElementById("fontWeight_page2")
+//		document.getElementById("fontStyle_page2")
+//		document.getElementById("fillOrStroke_page2")
+		document.getElementById('textFillColor_page2').color.fromString(this.sFillColor.substring(1, 7));
+		
+		
 		if(!this.bSelected)
 		{
 			window.selectionlayer.add(this.selectionShapeRect);
@@ -733,5 +743,63 @@ function MWWord(word)
 		//Move the word to a valid position
 		this.MoveToNewPosition();
 		
-	};	
+	};
+	
+	this.UpdateDrawing = function()
+	{
+		window.textlayer.remove(this.textShape);
+		
+		//create textshape with actual parameters
+		this.textShape = new Kinetic.Text({
+			name: this.sWord,
+			x: this.pPos.x,
+			y: this.pPos.y,
+			text: this.sWord,
+			fontSize: this.iCount*10,
+			fontFamily: this.sFont,
+			textFill: this.sFillColor,
+			align: "center",
+			verticalAlign: "middle",
+			fontStyle: this.sFontStyle,
+			fontWeight: this.sFontWeight,
+			draggable: true
+		});
+		//rotate text according to the rotation
+		this.textShape.setRotationDeg(this.iTextRotation);
+		
+		window.textlayer.add(this.textShape);
+		this.textShape.saveData();
+		
+		//add eventlistener again
+		this.textShape.on("dragstart", function(event) {
+			DragStartFunction(event);
+		});
+		this.textShape.on("dragmove", function(event) {
+			DragMoveFunction(event);
+		});
+		this.textShape.on("dragend", function(event) {
+			DragEndFunction(event);
+			UpdateFancyBox();
+		});
+		this.textShape.on("mouseover", function() {
+			document.body.style.cursor = "pointer";
+		});
+		this.textShape.on("mouseout", function() {
+			document.body.style.cursor = "default";
+		});
+		this.textShape.on("mousedown", function(event) {
+			var currentWord = window.TextHandler.GetWord(event.shape.getName());
+			var selectedWord = window.TextHandler.GetSelectedWord();
+			
+			if(selectedWord != undefined)
+				selectedWord.Unselect();
+
+			window.TextHandler.SelectWord(currentWord);
+			currentWord.Select();
+			
+			window.selectionlayer.draw();
+		});
+		
+		window.textlayer.draw();
+	};
 }
