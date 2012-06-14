@@ -640,7 +640,10 @@ function MWWord(word)
 		this.textShape.transitionTo({
 			x: this.pPos.x,
 			y: this.pPos.y,
-			duration: 0.2
+			duration: 0.2,
+			callback: function(){
+				UpdateFancyBox();
+			}
 		});
 		
 		//DEBUG
