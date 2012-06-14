@@ -634,14 +634,14 @@ function MWWord(word)
 		this.BoundingBox.setOffset(0, 0);
 		
 		//LUXURY - transition
-		/*this.textShape.setX(this.pStart.x);
+		this.textShape.setX(this.pStart.x);
 		this.textShape.setY(this.pStart.y);
 
 		this.textShape.transitionTo({
 			x: this.pPos.x,
 			y: this.pPos.y,
 			duration: 0.2
-		});*/
+		});
 		
 		//DEBUG
 //		this.BoundingBox.Draw();
