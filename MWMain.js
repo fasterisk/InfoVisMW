@@ -7,6 +7,8 @@ function eventWindowLoaded()
 	document.getElementById("maniwordlecanvas").style.display = 'none';
 	document.getElementById("loadingDiv").style.display = 'none';
 	
+	$('#saveButton2').fancybox();
+	
 	window.TextHandler = new MWTextHandler();
 	window.CurrentText = "maniwordle maniwordle maniwordle maniwordle maniwordle wordle wordle wordle";
 	window.TextHandler.ReadText(window.CurrentText);
@@ -53,11 +55,18 @@ function MainApp()
 	formElement = document.getElementById("textRotation");
 	formElement.addEventListener('change', textRotationChanged, false);
 	
-	//Add eventlistener for changing page
+	//Add eventlistener for second page
 	formElement = document.getElementById("returnToCreate");
 	formElement.addEventListener('click', returnButtonClicked, false);
 	
+	formElement = document.getElementById("saveButton");
+	formElement.addEventListener('click', saveButtonClicked, false);
 	
+	formElement = document.getElementById("saveButton2");
+	formElement.addEventListener('click', saveButton2Clicked, false);
+	
+	
+	//Eventhandler for first page
 	function textBoxChanged(e)
 	{
 		var target = e.target;
@@ -78,11 +87,8 @@ function MainApp()
 			});
 			window.Canvas = new MWCanvas(stage);
 		}
-		
 		window.Canvas.UpdateWordStyles();
 		window.Canvas.Draw();
-		
-		
 	}
 
 	function fillOrStrokeChanged(e)
@@ -139,12 +145,34 @@ function MainApp()
 		window.Canvas.SetTextRotation(target.value);
 	}
 	
-	
+	//event handler for second page
 	function returnButtonClicked(e)
 	{
 		document.getElementById("changeDiv").style.display = 'none';
 		document.getElementById("createDiv").style.display = 'block';
 		document.getElementById("maniwordlecanvas").style.display = 'none';
+	}
+	
+	function saveButtonClicked(e)
+	{
+		window.stage.remove(window.selectionlayer);
+		stage.toDataURL(function(dataUrl){
+			window.open(dataUrl);
+		});
+		window.stage.add(window.selectionlayer);
+	}
+	
+	function saveButton2Clicked(e)
+	{
+//		window.stage.remove(window.selectionlayer);
+		/*stage.toDataURL(function(dataUrl){
+			$('#saveButton2').fancybox({
+				type: 'image',
+				href : dataUrl,
+				title: 'blabla'
+			});
+		});*/
+//		window.stage.add(window.selectionlayer);
 	}
 	
 }

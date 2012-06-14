@@ -27,3 +27,19 @@ function ShowDelayMessage()
 {
 	Debugger.log("DELAY");
 };
+
+function UpdateFancyBox()
+{
+	Debugger.log("UPDATING FANCYBOX");
+	//update fancybox
+	window.stage.toDataURL(
+		function(dataUrl){
+			$('#saveButton2').fancybox({
+				type: 'image',
+				href : dataUrl,
+				title: 'blabla'
+		});}//, 
+//		"image/jpeg",
+//		1.0
+	);
+}

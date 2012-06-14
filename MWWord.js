@@ -185,6 +185,17 @@ function DragEndFunction(event)
 	
 	document.body.style.cursor = "default";
 	window.textlayer.draw();
+	
+	
+	//update fancybox
+	window.stage.toDataURL(function(dataUrl){
+		Debugger.log("AAAAAAAAAAAAAA");
+		$('#saveButton2').fancybox({
+			type: 'image',
+			href : dataUrl,
+			title: 'blabla'
+		});
+	});
 }
 
 function MWWord(word) 
@@ -358,6 +369,7 @@ function MWWord(word)
 		});
 		this.selectionShapeRect.on("dragend", function(event) {
 			DragEndFunction(event);
+			UpdateFancyBox();
 		});
 		this.selectionShapeRect.on("mouseover", function(event) {
 			document.body.style.cursor = "pointer";
@@ -437,6 +449,7 @@ function MWWord(word)
 		
 		this.selectionShapeRotationPoint.on("dragend", function(event){
 			DragEndFunction(event);
+			UpdateFancyBox();
 		});
 		this.selectionShapeRotationPoint.on("mouseover", function(event) {
 			document.body.style.cursor = "pointer";
@@ -700,6 +713,7 @@ function MWWord(word)
 		});
 		this.textShape.on("dragend", function(event) {
 			DragEndFunction(event);
+			UpdateFancyBox();
 		});
 		this.textShape.on("mouseover", function() {
 			document.body.style.cursor = "pointer";

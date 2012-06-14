@@ -100,6 +100,7 @@ function MWCanvas(stage)
 			document.getElementById("loadingDiv").style.display = 'none';
 			document.getElementById("maniwordlecanvas").style.display = 'block';
 			document.getElementById("changeDiv").style.display = 'block';
+			UpdateFancyBox();
 		}
 			
 	};
@@ -199,6 +200,7 @@ function MWCanvas(stage)
 		var rectangle = new Kinetic.Rect({
 			x: 0,
 			y: 0,
+			fill: "white",
 			width: 800,
 			height: 600
 		});
