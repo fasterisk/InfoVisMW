@@ -111,6 +111,7 @@ function MWCanvas(stage)
 			document.getElementById("loadingDiv").style.display = 'none';
 			document.getElementById("maniwordlecanvas").style.display = 'block';
 			document.getElementById("changeDiv1").style.display = 'block';
+			Debugger.log(overall_comparisons);
 			UpdateFancyBox();
 		}
 			

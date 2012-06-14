@@ -39,6 +39,44 @@ aKnownWords.push("more");
 aKnownWords.push("cant");
 aKnownWords.push("because");
 aKnownWords.push("even");
+aKnownWords.push("will");
+aKnownWords.push("has");
+aKnownWords.push("die");
+aKnownWords.push("ist");
+aKnownWords.push("sie");
+aKnownWords.push("diese");
+aKnownWords.push("auch");
+aKnownWords.push("für");
+aKnownWords.push("aus");
+aKnownWords.push("sich");
+aKnownWords.push("den");
+aKnownWords.push("wir");
+aKnownWords.push("dass");
+aKnownWords.push("bei");
+aKnownWords.push("als");
+aKnownWords.push("von");
+aKnownWords.push("aber");
+aKnownWords.push("jeder");
+aKnownWords.push("nach");
+aKnownWords.push("mit");
+aKnownWords.push("per");
+aKnownWords.push("nur");
+aKnownWords.push("soll");
+aKnownWords.push("zum");
+aKnownWords.push("sein");
+aKnownWords.push("dem");
+aKnownWords.push("über");
+aKnownWords.push("das");
+aKnownWords.push("des");
+aKnownWords.push("kann");
+aKnownWords.push("nicht");
+aKnownWords.push("einer");
+aKnownWords.push("und");
+aKnownWords.push("werden");
+aKnownWords.push("wird");
+
+
+
 
 var overall_comparisons = 0;
 

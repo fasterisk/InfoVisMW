@@ -131,7 +131,7 @@ function DragEndFunction(event)
 					var comparingWord = window.TextHandler.GetWord(aWordsToCompare[j].getName());
 					if(comparingWord.bPinned || aWordsToCompare[j].getFontSize() > word.textShape.getFontSize())
 					{
-//						Debugger.log("COLLISION of "+word.sWord+"(smaller) with " +aWordsToCompare[j].getName() + "(bigger)");
+						Debugger.log("COLLISION of "+word.sWord+"(smaller) with " +aWordsToCompare[j].getName() + "(bigger)");
 						//move current word back, no other word is moved
 						word.textShape.transitionTo({
 							x: word.pStart.x,
@@ -169,7 +169,7 @@ function DragEndFunction(event)
 					}
 					else
 					{
-//						Debugger.log("COLLISION of "+word.sWord+"(bigger) with " +aWordsToCompare[j].getName()+"(smaller)");
+						Debugger.log("COLLISION of "+word.sWord+"(bigger) with " +aWordsToCompare[j].getName()+"(smaller)");
 						//add smaller word to the ones that have to move - moving is done later
 
 						aWordsAlreadyToMove[j] = true;
@@ -194,9 +194,9 @@ function DragEndFunction(event)
 		}
 		for(var k = 0; k < aWordsToMove.length; k++)
 		{
-//			Debugger.log("MOVING "+aWordsToMove[k].sWord);
+			Debugger.log("MOVING "+aWordsToMove[k].sWord);
 			var currentWord = aWordsToMove[k];
-			currentWord.MoveToNewPosition();
+			currentWord.MoveToNewPosition(false);
 		}
 	}
 	
@@ -322,6 +322,7 @@ function MWWord(word)
 		{
 			for(var x = this.pPos.x-this.iSpanWidth; x < this.pPos.x+this.iSpanWidth; x+=2)
 			{
+				overall_comparisons++;
 				if(this.textShape.intersects(x,y))
 				{
 					if(x < pLT.x)
@@ -588,7 +589,7 @@ function MWWord(word)
 	 *  - because it is moved when a bigger word gets dropped at its position
 	 *  - or at the creation of the word cloud
 	 */
-	this.MoveToNewPosition = function()
+	this.MoveToNewPosition = function(beginning)
 	{
 //		Debugger.log(this.sWord+": MOVE TO NEW POSITION");
 		
@@ -614,27 +615,32 @@ function MWWord(word)
 		var bCanBeDrawn = false;
 		//true, when collision is detected
 		var bCollisionDetected = false;
+		
+		//remove this shape to get only the children of the layer that need to be compared
+		window.textlayer.remove(this.textShape);
+		
+		//get other children of this layer
+		var layerChildren = window.textlayer.getChildren();
+		
+		//if current word is the first one, you can draw it directly
+		if(layerChildren.length == 0)
+		{
+//			Debugger.log(this.sWord+"("+pCurrentPos.x+","+pCurrentPos.y+") : NO WORDS TO COMPARE BECAUSE CURRENTLY THERE EXISTS ONLY THIS WORD");
+//			window.textlayer.add(this.textShape);
+//			this.textShape.saveData();
+			bCanBeDrawn = true;
+		}
+		
 		while(!bCanBeDrawn)
 		{
-			//remove this shape to get only the children of the layer that need to be compared
-			window.textlayer.remove(this.textShape);
-			
-			//get other children of this layer
-			var layerChildren = window.textlayer.getChildren();
-			
-			//if current word is the first one, you can draw it directly
-			if(layerChildren.length == 0)
-			{
-//				Debugger.log(this.sWord+"("+pCurrentPos.x+","+pCurrentPos.y+") : NO WORDS TO COMPARE BECAUSE CURRENTLY THERE EXISTS ONLY THIS WORD");
-				window.textlayer.add(this.textShape);
-				this.textShape.saveData();
-				break;
-			}
+			bCollisionDetected = false;
+			bCanBeDrawn = true;
 			
 			//get an array of the words that need to be compared because of the collision of their bounding boxes
 			var aWordsToCompare = new Array();
 			for(var i = 0; i < layerChildren.length; i++)
 			{
+				overall_comparisons++;
 				var comparingWord = window.TextHandler.GetWord(layerChildren[i].getName());
 				if(this.BoundingBox.collidesWith(comparingWord.BoundingBox))
 				{
@@ -649,26 +655,88 @@ function MWWord(word)
 				this.textShape.saveData();
 				break;
 			}
-			else
+			else if(aWordsToCompare.length > 2)
 			{
 //				Debugger.log(this.sWord+"("+pCurrentPos.x+","+pCurrentPos.y+") : "+ aWordsToCompare.length+" WORDS TO COMPARE BECAUSE OF THE BOUNDING BOX");
+				bCollisionDetected = true;
+				bCanBeDrawn = false;
+			
+				var oldX = pCurrentPos.x;
+				var oldY = pCurrentPos.y;
+				if(bRight)
+				{
+					pCurrentPos.x+=25;
+					iCount++;
+					if(iCount == iCurrentValue)
+					{
+						bRight = false;
+						bDown = true;
+						iCount = 0;
+					}
+//					Debugger.log("RIGHT");
+				}
+				else if(bDown)
+				{
+					pCurrentPos.y+=25;
+					iCount++;
+					if(iCount == iCurrentValue)
+					{
+						bDown = false;
+						bLeft = true;
+						iCount = 0;
+						iCurrentValue++;
+					}
+//					Debugger.log("DOWN");
+				}
+				else if(bLeft)
+				{
+					pCurrentPos.x-=25;
+					iCount++;
+					if(iCount == iCurrentValue)
+					{
+						bLeft = false;
+						bUp = true;
+						iCount = 0;
+					}
+//					Debugger.log("LEFT");
+				}
+				else if(bUp)
+				{
+					pCurrentPos.y-=25;
+					iCount++;
+					if(iCount == iCurrentValue)
+					{
+						bUp = false;
+						bRight = true;
+						iCount = 0;
+						iCurrentValue++;
+					}
+//					Debugger.log("UP");
+				}
+		
+				for(var k = 0; k < this.aDrawnPoints.length; k++)
+				{
+					this.aDrawnPoints[k].x += pCurrentPos.x-oldX;
+					this.aDrawnPoints[k].y += pCurrentPos.y-oldY;
+				}
+				this.BoundingBox.pLT.x += pCurrentPos.x-oldX;
+				this.BoundingBox.pLT.y += pCurrentPos.y-oldY;
+				this.BoundingBox.pRB.x += pCurrentPos.x-oldX;
+				this.BoundingBox.pRB.y += pCurrentPos.y-oldY;
+				
+//				Debugger.log("Collision Detected 1");
 			}
 			
-			bCollisionDetected = false;
-			bCanBeDrawn = true;
+			
 			//go through all the pixels of the current text and look if it collides with a pixel at the layer
 			for(var i = 0; i < this.aDrawnPoints.length; i++)
 			{
-				
 				if(bCollisionDetected)
 					break;
 
 				//get current pixel
 				var x = this.aDrawnPoints[i].x;
 				var y = this.aDrawnPoints[i].y;
-				
-				if(!this.textShape.intersects(x,y))
-					Debugger.log(this.sWord+"("+pCurrentPos.x+","+pCurrentPos.y+") : ERROR");
 				
 				//go through all children for collision detection
 				for(var j = 0; j < aWordsToCompare.length; j++)
@@ -686,7 +754,7 @@ function MWWord(word)
 						var oldY = pCurrentPos.y;
 						if(bRight)
 						{
-							pCurrentPos.x+=20;
+							pCurrentPos.x+=25;
 							iCount++;
 							if(iCount == iCurrentValue)
 							{
@@ -698,7 +766,7 @@ function MWWord(word)
 						}
 						else if(bDown)
 						{
-							pCurrentPos.y+=20;
+							pCurrentPos.y+=25;
 							iCount++;
 							if(iCount == iCurrentValue)
 							{
@@ -711,7 +779,7 @@ function MWWord(word)
 						}
 						else if(bLeft)
 						{
-							pCurrentPos.x-=20;
+							pCurrentPos.x-=25;
 							iCount++;
 							if(iCount == iCurrentValue)
 							{
@@ -723,7 +791,7 @@ function MWWord(word)
 						}
 						else if(bUp)
 						{
-							pCurrentPos.y-=20;
+							pCurrentPos.y-=25;
 							iCount++;
 							if(iCount == iCurrentValue)
 							{
@@ -745,19 +813,19 @@ function MWWord(word)
 						this.BoundingBox.pRB.x += pCurrentPos.x-oldX;
 						this.BoundingBox.pRB.y += pCurrentPos.y-oldY;
 						
-						this.textShape.setX(pCurrentPos.x);
-						this.textShape.setY(pCurrentPos.y);
-				
 //						Debugger.log("Collision Detected 1");
 						break;
 					}
 				}
 			}
-			
-			//add the shape to the layer again
-			window.textlayer.add(this.textShape);
-			this.textShape.saveData();
 		}
+		
+		this.textShape.setX(pCurrentPos.x);
+		this.textShape.setY(pCurrentPos.y);
+		
+		//add the shape to the layer again
+		window.textlayer.add(this.textShape);
+		this.textShape.saveData();
 		
 		//update position of the word and its drawnpoints and the bounding box
 		this.pPos.x = pCurrentPos.x;
@@ -770,17 +838,20 @@ function MWWord(word)
 		this.BoundingBox.setOffset(0, 0);
 		
 		//move the shape back to the startposition and make a nice transition to the new position
-		this.textShape.setX(this.pStart.x);
-		this.textShape.setY(this.pStart.y);
+		if(!beginning)
+		{
+			this.textShape.setX(this.pStart.x);
+			this.textShape.setY(this.pStart.y);
 
-		this.textShape.transitionTo({
-			x: this.pPos.x,
-			y: this.pPos.y,
-			duration: 0.2,
-			callback: function(){
-				UpdateFancyBox();
-			}
-		});
+			this.textShape.transitionTo({
+				x: this.pPos.x,
+				y: this.pPos.y,
+				duration: 0.2,
+				callback: function(){
+					UpdateFancyBox();
+				}
+			});
+		}
 		
 		//DEBUG
 //		this.BoundingBox.Draw();
@@ -891,7 +962,7 @@ function MWWord(word)
 		this.CreateDrawnPointArray();
 
 		//Move the word to a valid position
-		this.MoveToNewPosition();
+		this.MoveToNewPosition(true);
 		
 	};
 	
