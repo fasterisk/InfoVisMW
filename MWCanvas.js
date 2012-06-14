@@ -11,7 +11,8 @@ function MWCanvas(stage)
 	
 	this.sFillOrStroke = "fill";
 	this.sFont = "serif";
-	this.sBackgroundColor = "#ffffff";
+	this.sBackgroundColor = "#000000";
+	this.sSelectionColor = "#ffffff";
 	this.sFillColor1 = "#C20000";
 	this.sFillColor2 = "#00AD00";
 	this.sFillColor3 = "#00008C";
@@ -56,7 +57,6 @@ function MWCanvas(stage)
 				this.aToDrawList.push(aWordList[i]);
 		}
 		
-		window.selectionlayer.draw();
 		
 		this.dummylayer.on("mousedown", function(event){
 			var aDrawnWords = window.Canvas.GetDrawnWordsList();
@@ -170,6 +170,13 @@ function MWCanvas(stage)
 		}
 	};
 	
+	this.SetBackGroundColor = function(color)
+	{
+		this.sBackgroundColor = color;
+		this.sSelectionColor = InverseColor(color);
+		Debugger.log(this.sSelectionColor);
+	};
+	
 	this.SetFont = function(font)
 	{
 		this.sFont = font;
@@ -200,10 +207,11 @@ function MWCanvas(stage)
 		var rectangle = new Kinetic.Rect({
 			x: 0,
 			y: 0,
-			fill: "white",
+			fill: this.sBackgroundColor,
 			width: 800,
 			height: 600
 		});
 		this.dummylayer.add(rectangle);
+		this.dummylayer.draw();
 	};
 }

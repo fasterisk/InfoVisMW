@@ -7,8 +7,6 @@ function eventWindowLoaded()
 	document.getElementById("maniwordlecanvas").style.display = 'none';
 	document.getElementById("loadingDiv").style.display = 'none';
 	
-	$('#saveButton2').fancybox();
-	
 	window.TextHandler = new MWTextHandler();
 	window.CurrentText = "maniwordle maniwordle maniwordle maniwordle maniwordle wordle wordle wordle";
 	window.TextHandler.ReadText(window.CurrentText);
@@ -22,6 +20,16 @@ function MainApp()
 		return;
 	}
 	
+	if(window.stage == undefined)
+	{
+		window.stage = new Kinetic.Stage({
+			container: "maniwordlecanvas",
+			width: 800,
+			height: 600
+		});
+		window.Canvas = new MWCanvas(stage);
+	}
+	
 	//Add event listener for creation page
 	var formElement = document.getElementById("textBox");
 	formElement.addEventListener('keyup', textBoxChanged, false);
@@ -32,6 +40,8 @@ function MainApp()
 	formElement = document.getElementById("fillOrStroke");
 	formElement.addEventListener('change', fillOrStrokeChanged, false);
 
+	formElement = document.getElementById("backGroundColor");
+	formElement.addEventListener('change', textFillColorChanged, false);
 	formElement = document.getElementById("textFillColor1");
 	formElement.addEventListener('change', textFillColorChanged, false);
 	formElement = document.getElementById("textFillColor2");
@@ -58,13 +68,6 @@ function MainApp()
 	//Add eventlistener for second page
 	formElement = document.getElementById("returnToCreate");
 	formElement.addEventListener('click', returnButtonClicked, false);
-	
-	formElement = document.getElementById("saveButton");
-	formElement.addEventListener('click', saveButtonClicked, false);
-	
-	formElement = document.getElementById("saveButton2");
-	formElement.addEventListener('click', saveButton2Clicked, false);
-	
 	
 	//Eventhandler for first page
 	function textBoxChanged(e)
@@ -102,6 +105,9 @@ function MainApp()
 		var target = e.target;
 		switch(target.id)
 		{
+		case "backGroundColor":
+			window.Canvas.SetBackGroundColor("#" + target.value);
+			break;
 		case "textFillColor1":
 			window.Canvas.SetFillColor(1, "#" + target.value);
 			break;
@@ -151,28 +157,6 @@ function MainApp()
 		document.getElementById("changeDiv").style.display = 'none';
 		document.getElementById("createDiv").style.display = 'block';
 		document.getElementById("maniwordlecanvas").style.display = 'none';
-	}
-	
-	function saveButtonClicked(e)
-	{
-		window.stage.remove(window.selectionlayer);
-		stage.toDataURL(function(dataUrl){
-			window.open(dataUrl);
-		});
-		window.stage.add(window.selectionlayer);
-	}
-	
-	function saveButton2Clicked(e)
-	{
-//		window.stage.remove(window.selectionlayer);
-		/*stage.toDataURL(function(dataUrl){
-			$('#saveButton2').fancybox({
-				type: 'image',
-				href : dataUrl,
-				title: 'blabla'
-			});
-		});*/
-//		window.stage.add(window.selectionlayer);
 	}
 	
 }

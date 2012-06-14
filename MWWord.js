@@ -186,16 +186,6 @@ function DragEndFunction(event)
 	document.body.style.cursor = "default";
 	window.textlayer.draw();
 	
-	
-	//update fancybox
-	window.stage.toDataURL(function(dataUrl){
-		Debugger.log("AAAAAAAAAAAAAA");
-		$('#saveButton2').fancybox({
-			type: 'image',
-			href : dataUrl,
-			title: 'blabla'
-		});
-	});
 }
 
 function MWWord(word) 
@@ -355,7 +345,7 @@ function MWWord(word)
 			y: this.pPos.y,
 			width: this.textShape.getTextWidth(),
 			height: this.textShape.getTextHeight(),
-			stroke: "black",
+			stroke: window.Canvas.sSelectionColor,
 			strokeWidth: 1,
 			centerOffset: [this.textShape.getTextWidth()/2, this.textShape.getTextHeight()/2], //for rotation
 			draggable: true
@@ -382,7 +372,7 @@ function MWWord(word)
 			name: this.sWord,
 			points: [this.pPos.x + this.textShape.getTextHeight()/2*Math.sin(this.iTextRotation*Math.PI/180), this.pPos.y - this.textShape.getTextHeight()/2*Math.cos(this.iTextRotation*Math.PI/180),
 			         this.pPos.x + this.textShape.getTextHeight()/2*Math.sin(this.iTextRotation*Math.PI/180)+20*Math.sin(this.iTextRotation*Math.PI/180), this.pPos.y - this.textShape.getTextHeight()/2*Math.cos(this.iTextRotation*Math.PI/180) - 20*Math.cos(this.iTextRotation*Math.PI/180)],
-			stroke: "black",
+			stroke: window.Canvas.sSelectionColor,
 			strokeWidth : 1,
 			lineCap: "round",
 			lineJoin: "round"
@@ -395,7 +385,7 @@ function MWWord(word)
 			y: this.pPos.y - this.textShape.getTextHeight()/2*Math.cos(this.iTextRotation*Math.PI/180) - 20*Math.cos(this.iTextRotation*Math.PI/180),
 			radius: 5,
 			fill: "green",
-			stroke: "black",
+			stroke: window.Canvas.sSelectionColor,
 			strokeWidth: 1,
 			draggable: true
 		});
