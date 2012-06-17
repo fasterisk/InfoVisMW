@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>ManiWordle</title>
+		<style type="text/css">
+			body {
+				font: normal 12px arial, sans-serif;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="body">
+			<h1>Documentation for ManiWordle</h1>
+			
+			<h2><a href="ManiWordle.html">ManiWordle</a></h2>
+			<br>
+			Click the link above to start ManiWordle, a flexible word cloud generator. This Webapplication was
+			designed and tested using Google Chrome, therefore you get the best experience by this application
+			using this browser. It was last tested with Chrome v19. This version included a bug in which
+			you could not save the displayed word cloud after clicking "Save Image", this bug was fixed
+			in later versions (tested with Google Chrome build 21.0.1171.0 dev-m). 
+
+			<h2>Usage</h2>
+			When you start ManiWordle, you can enter a text in the textarea. After this, you can change following
+			options regarding the appearance of the word cloud that is generated when clicking on Create.
+			<ul>
+				<li>Text font (serif, sans-serif, cursive, fantasy, monospace)</li>
+				<li>Font style (normal, italic, bold)</li>
+				<li>Fill option (fill, fill + border)</li>
+				<li>Background color</li>
+				<li>5 Text colors</li>
+				<li>Border color</li>
+				<li>Maximum text rotation (from 0 to 90 degrees)</li>
+			</ul>
+			<br>
+			After this step, the click on "Create!" generates a word cloud. In the next window that appears
+			you can change the options of each word individually by selecting it with the mouse. You have the options to:
+			<ul>
+				<li>Move the word. If the word is dropped at a position where a bigger or a pinned word lies, the currently moved word is
+				moved back. On the other side, if you drop a big word at a position where smaller words lie, all the smaller words of the
+				new position of the bigger word have to move.</li>
+				<li>Rotate the word by dragging the green rotation point. As for collisions, the same rules are applied as when moving a word.</li>
+				<li>Delete a word by pressing del/entf.</li>
+				<li>Pin a word, so it stays at its position even if a bigger word gets dropped upon it.</li>
+				<li>Change the color, font, font style, border and the border color of the selected word.</li>
+			</ul>
+			If you are happy about the resulting word cloud, you can generate a png image by clicking the "Save Image"-button and save it
+			by right click and the "Save Image as..." option. Note: Due to a bug in the current release version of Google Chrome, the "Save Image as..." option
+			does not work in this version. In the current developer version this bug does not exist any more (v21).
+			
+			<h2>Javascript Source Code Documentation</h2>
+			<ul>
+				<li>
+					<h3><a href="MWMain.js">MWMain.js</a></h3>
+					Contains all eventhandlers for the user interface. The main function of this file is called
+					when the window is loaded; initializes the canvas, texthandler and all needed classes.
+				</li>
+				<li>
+					<h3><a href="MWHelper.js">MWHelper.js</a></h3>
+					Contains helping functions like Debugger, InverseColor, ValueToHex, WordSort and UpdateFancyBox.
+				</li>
+				<li>
+					<h3><a href="MWKnownWords.js">MWKnownWords.js</a></h3>
+					Contains a blacklist of known words that are ignored in the word cloud generation (like "and" etc.) and a function
+					to check if a word is in this blacklist.
+				</li>
+				<li>
+					<h3><a href="MWCanvas.js">MWCanvas.js</a></h3>
+					The real "main"-class of this application. Contains the creation of the kineticjs-stage and its layers.
+					It further contains the options of the word cloud generation like the font, all the colors or the word rotation.
+					It contains the main function that is called when the Create!-Button is clicked, and then calls the draw-function
+					of all words that need to be drawn.	Other functions it contains are setters for the word cloud options.
+				</li>
+				<li>
+					<h3><a href="MWWord.js">MWWord.js</a></h3>
+					This class is another big and important class of this applications. It contains the drawing algorithm of the words
+					(the positioning algorithm, collision detection, event handlers when clicking on a word, dragging it and releasing it).
+					It further contains the kineticjs word shape, and the selection shape of each word. It basically contains all interactions
+					of the word itself.
+				</li>
+				<li>
+					<h3><a href="MWTextHandler.js">MWTextHandler.js</a></h3>
+					Contains the essential function ReadText(text) which creates the wordlist that later will be drawn. It counts the appearances
+					of the words, removes characters like "." or ",".
+					This class contains also a pointer to the currently selected word, so you can access this word from all other classes.
+				</li>
+				<li>
+					<h3><a href="MWBoundingBox.js">MWBoundingBox.js</a></h3>
+					This class defines a bounding box for a word that is used in the collision detection system.
+				</li>
+			</ul>
+		</div>
+	</body>
+</html>
