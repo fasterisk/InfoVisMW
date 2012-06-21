@@ -42,7 +42,7 @@ function UpdateFancyBox()
 			$('#saveButton').fancybox({
 				type: 'image',
 				href : dataUrl,
-				title: 'blabla'
+				title: 'Save the image through the right-click dialog'
 		});}//, 
 //		"image/jpeg",
 //		1.0

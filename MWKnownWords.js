@@ -1,3 +1,8 @@
+/**
+ * This file contains a list of words that are ignored
+ */
+
+
 window.aKnownWords = new Array();
 aKnownWords.push("the");
 aKnownWords.push("der");
@@ -74,7 +79,7 @@ aKnownWords.push("einer");
 aKnownWords.push("und");
 aKnownWords.push("werden");
 aKnownWords.push("wird");
-
+aKnownWords.push("but");
 
 
 

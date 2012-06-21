@@ -21,6 +21,7 @@ function MainApp()
 		return;
 	}
 	
+	//create stage
 	if(window.stage == undefined)
 	{
 		window.stage = new Kinetic.Stage({
@@ -97,10 +98,26 @@ function MainApp()
 
 	function submitButtonClicked(e)
 	{
+		window.TextHandler.ReadText(window.CurrentText);
+		
+		var aToDrawList = new Array();
+		var aWordList = window.TextHandler.GetWordList();
+		for(var i = 0; i < aWordList.length; i++)
+		{
+			if(aWordList[i].iCount > 1)
+				aToDrawList.push(aWordList[i]);
+		}
+		
+		if(aToDrawList.length == 0)
+		{
+			alert("Text is too short! Please enter longer text!");
+			return;
+		}
+		
 		document.getElementById("loadingDiv").style.display = 'block';
 		document.getElementById("createDiv1").style.display = 'none';
 		document.getElementById("createDiv2").style.display = 'none';
-		window.TextHandler.ReadText(window.CurrentText);
+		
 		if(window.stage == undefined)
 		{
 			window.stage = new Kinetic.Stage({

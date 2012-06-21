@@ -1,3 +1,9 @@
+/**
+ * reads the text and stores a wordlist
+ * - also stores the currently selected word
+ * @returns
+ */
+
 function MWTextHandler()
 {
 	/* private members */
@@ -40,6 +46,8 @@ function MWTextHandler()
 		text = text.replace(/\;/g, "");
 		text = text.replace(/\:/g, "");
 		text = text.replace(/\'/g, "");
+		text = text.replace(/\(/g, "");
+		text = text.replace(/\)/g, "");
 		
 		this.aWordList = new Array();
 		
@@ -121,12 +129,8 @@ function MWTextHandler()
 			if(tempWordList[i].iCount > maxSize)
 				maxSize = tempWordList[i].iCount;
 
-		while(maxSize > 15)
-		{
-			for(var i = 0; i < tempWordList.length; i++)
-				tempWordList[i].iCount--;
-			maxSize--;
-		}
+		//for(var i = 0; i < tempWordList.length; i++)
+			//tempWordList[i].iCount *= (tempWordList[i].iCount / maxSize);
 		
 		for ( var i = 0; i < tempWordList.length; i++)
 		{

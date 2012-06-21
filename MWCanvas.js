@@ -65,7 +65,6 @@ function MWCanvas(stage)
 				this.aToDrawList.push(aWordList[i]);
 		}
 		
-		
 		this.dummylayer.on("mousedown", function(event){
 			var aDrawnWords = window.Canvas.GetDrawnWordsList();
 			var bIntersect = false;
@@ -92,6 +91,7 @@ function MWCanvas(stage)
 		});
 		
 		window.Canvas.DrawNextWord(0);
+		return true;
 	};
 	
 	this.DrawNextWord = function(index)
