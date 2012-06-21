@@ -4,11 +4,11 @@ function MWCanvas(stage)
 	this.dummylayer = new Kinetic.Layer();
 	this.textlayer = new Kinetic.Layer();
 	this.selectionlayer = new Kinetic.Layer();
-	
+
 	this.stage.add(this.dummylayer);
 	this.stage.add(this.textlayer);
 	this.stage.add(this.selectionlayer);
-	
+
 	this.sFillOrStroke = "fill";
 	this.sFont = "serif";
 	this.sBackgroundColor = "#000000";
@@ -18,91 +18,95 @@ function MWCanvas(stage)
 	this.sFillColor3 = "#00008C";
 	this.sFillColor4 = "#737300";
 	this.sFillColor5 = "#910091";
-	this.sBordercolor = "#000000";
+	this.sBordercolor = "#ffffff";
 	this.sFontStyle = "normal";
 	this.iTextRotation = 0;
-	
+
 	this.aDrawnWords = new Array();
 	this.aToDrawList = new Array();
-	
+
 	this.dummyrectangle = new Kinetic.Rect({
-		x: 0,
-		y: 0,
-		fill: this.sBackgroundColor,
-		width: 800,
-		height: 600
+		x : 0,
+		y : 0,
+		fill : this.sBackgroundColor,
+		width : 800,
+		height : 600
 	});
-	
+
 	this.Draw = function()
 	{
-		
+
 		this.stage.reset();
 		this.dummylayer = new Kinetic.Layer();
 		this.textlayer = new Kinetic.Layer();
 		this.selectionlayer = new Kinetic.Layer();
-		
+
 		this.stage.add(this.dummylayer);
 		this.stage.add(this.textlayer);
 		this.stage.add(this.selectionlayer);
-		
+
 		this.DrawDummyRectangle();
-		
+
 		window.stage = this.stage;
 		window.textlayer = this.textlayer;
 		window.selectionlayer = this.selectionlayer;
-		
-		//set selected word to undefined
+
+		// set selected word to undefined
 		window.TextHandler.SelectWord(undefined);
-		
+
 		this.UpdateWordStyles();
-		
+
 		this.aDrawnWords = new Array();
 		this.aToDrawList = new Array();
 		var aWordList = window.TextHandler.GetWordList();
-		for(var i = 0; i < aWordList.length; i++)
+		for ( var i = 0; i < aWordList.length; i++)
 		{
-			if(aWordList[i].iCount > 1)
-				this.aToDrawList.push(aWordList[i]);
+			// if(aWordList[i].iCount > 1)
+			this.aToDrawList.push(aWordList[i]);
 		}
-		
-		this.dummylayer.on("mousedown", function(event){
+
+		this.dummylayer.on("mousedown", function(event)
+		{
 			var aDrawnWords = window.Canvas.GetDrawnWordsList();
 			var bIntersect = false;
-			for(var i = 0; i < aDrawnWords.length; i++)
+			for ( var i = 0; i < aDrawnWords.length; i++)
 			{
-				if(aDrawnWords[i].textShape.intersects(event.offsetX, event.offsetY))
+				if (aDrawnWords[i].textShape.intersects(event.offsetX,
+						event.offsetY))
 				{
 					bIntersect = true;
 					break;
 				}
 			}
-			if(!bIntersect)
+			if (!bIntersect)
 			{
 				var selectedWord = window.TextHandler.GetSelectedWord();
-				if(selectedWord != undefined)
+				if (selectedWord != undefined)
 					selectedWord.Unselect();
-				
+
 				window.TextHandler.SelectWord(undefined);
 				window.selectionlayer.draw();
 				document.getElementById("changeDiv2").style.display = 'none';
 			}
-			
+
 			UpdateFancyBox();
 		});
-		
+
 		window.Canvas.DrawNextWord(0);
 		return true;
 	};
-	
+
 	this.DrawNextWord = function(index)
 	{
-		this.aToDrawList[index].Draw(this.stage.getWidth(), this.stage.getHeight(), this.aDrawnWords);
+		this.aToDrawList[index].Draw(this.stage.getWidth(), this.stage
+				.getHeight(), this.aDrawnWords);
 		this.aDrawnWords.push(this.aToDrawList[index]);
-		
+
 		index++;
-		if(index < this.aToDrawList.length)
+		if (index < this.aToDrawList.length)
 		{
-			setTimeout(function() {
+			setTimeout(function()
+			{
 				window.Canvas.DrawNextWord(index);
 			}, 200);
 		}
@@ -114,24 +118,24 @@ function MWCanvas(stage)
 			Debugger.log(overall_comparisons);
 			UpdateFancyBox();
 		}
-			
+
 	};
-	
-	this.UpdateWordStyles = function() 
+
+	this.UpdateWordStyles = function()
 	{
 		var aWordList = window.TextHandler.GetWordList();
-		for(var i = 0; i < aWordList.length; i++)
+		for ( var i = 0; i < aWordList.length; i++)
 		{
 			aWordList[i].ChangeFont(this.sFont);
 			aWordList[i].ChangeFillOrStroke(this.sFillOrStroke);
 			aWordList[i].ChangeFillColor(this.sFillColor);
 			aWordList[i].ChangeFontStyle(this.sFontStyle);
 			aWordList[i].ChangeBorderColor(this.sBordercolor);
-			if(i%2 == 0)
+			if (i % 2 == 0)
 				aWordList[i].ChangeRotation(this.iTextRotation);
 			else
 				aWordList[i].ChangeRotation(this.iTextRotation - 90);
-			switch(i%5)
+			switch (i % 5)
 			{
 			case 0:
 				aWordList[i].ChangeFillColor(this.sFillColor1);
@@ -151,16 +155,15 @@ function MWCanvas(stage)
 			}
 		}
 	};
-	
+
 	this.SetFillOrStroke = function(fillOrStroke)
 	{
 		this.sFillOrStroke = fillOrStroke;
 	};
-	
-	
+
 	this.SetFillColor = function(id, fillcolor)
 	{
-		switch(id)
+		switch (id)
 		{
 		case 1:
 			this.sFillColor1 = fillcolor;
@@ -185,49 +188,49 @@ function MWCanvas(stage)
 			break;
 		}
 	};
-	
+
 	this.SetBackGroundColor = function(color)
 	{
 		this.sBackgroundColor = color;
 		this.dummyrectangle.setFill(this.sBackgroundColor);
 		this.dummylayer.draw();
 		this.sSelectionColor = InverseColor(color);
-		for(var i = 0; i < this.aDrawnWords.length; i++)
+		for ( var i = 0; i < this.aDrawnWords.length; i++)
 			this.aDrawnWords[i].UpdateSelectionColor(this.sSelectionColor);
 
 		window.selectionlayer.draw();
 		UpdateFancyBox();
 	};
-	
+
 	this.SetFont = function(font)
 	{
 		this.sFont = font;
 	};
-	
+
 	this.SetFontStyle = function(fontstyle)
 	{
 		this.sFontStyle = fontstyle;
 	};
-	
+
 	this.SetTextRotation = function(rotation)
 	{
 		this.iTextRotation = parseInt(rotation);
 	};
-	
+
 	this.GetDrawnWordsList = function()
 	{
 		return this.aDrawnWords;
 	};
-	
+
 	this.DrawDummyRectangle = function()
 	{
-		
+
 		this.dummyrectangle = new Kinetic.Rect({
-			x: 0,
-			y: 0,
-			fill: this.sBackgroundColor,
-			width: 800,
-			height: 600
+			x : 0,
+			y : 0,
+			fill : this.sBackgroundColor,
+			width : 800,
+			height : 600
 		});
 		this.dummylayer.add(this.dummyrectangle);
 		this.dummylayer.draw();
